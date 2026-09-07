@@ -1,6 +1,6 @@
 {
   "name": "da-frame-set",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Device frames for React — laptops, phones, tablets, monitors and browser chrome, drawn in CSS.",
   "type": "module",
   "license": "MIT",
