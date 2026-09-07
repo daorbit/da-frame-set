@@ -22,8 +22,7 @@ function App() {
     <div className={`app${route === 'playground' ? ' app--fixed' : ''}`}>
       <header className="topbar">
         <button className="topbar__brand" type="button" onClick={() => navigate('home')}>
-          <span className="topbar__mark" aria-hidden="true" />
-          da-frame-set
+          <img className="topbar__mark" src="/frameset-logo-square.png" alt="da-frame-set" />
         </button>
 
         <nav className="topbar__nav" aria-label="Main">

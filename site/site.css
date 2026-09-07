@@ -170,33 +170,11 @@ body {
 
 /* A miniature of the thing the package draws. */
 .topbar__mark {
-  position: relative;
   display: block;
   width: 26px;
   height: 26px;
-  border: 1.5px solid var(--fg);
   border-radius: 7px;
-}
-
-.topbar__mark::before {
-  content: '';
-  position: absolute;
-  inset: 4px 4px 7px;
-  border-radius: 2px;
-  background-color: var(--fg);
-  opacity: 0.18;
-}
-
-.topbar__mark::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  width: 10px;
-  height: 1.5px;
-  transform: translateX(-50%);
-  border-radius: 1px;
-  background-color: var(--fg);
+  object-fit: contain;
 }
 
 .topbar__nav {
