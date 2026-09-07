@@ -3,6 +3,8 @@ import { Docs } from './Docs';
 import { Home } from './Home';
 import { Playground } from './Playground';
 import { useRoute, type Route } from './router';
+
+import '../src/styles/frames.css';
 import './site.css';
 
 const NAV: [Route, string][] = [
