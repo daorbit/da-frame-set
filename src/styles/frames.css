@@ -103,25 +103,33 @@
   display: none;
 }
 
-/*
- * An iframe is inline-level by default, so it sits on the text baseline and
- * leaves a gap beneath it — a white strip along the bottom of the screen,
- * exactly where a device would show none.
- */
-.dfs__screen > iframe {
+ 
+.dfs__viewport {
+  position: relative;
+  min-height: 100%;
+}
+ 
+.dfs__viewport:has(> iframe) {
+  height: 100%;
+  overflow: hidden;
+}
+
+ 
+.dfs__screen > iframe,
+.dfs__viewport > iframe {
   display: block;
   border: 0;
 }
 
-/* ------------------------------------------------------------ materials -- */
+.dfs__viewport > iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 20px);
+  height: 100%;
+}
 
-/*
- * Finish is chosen per device rather than per chassis kind, so a space-black
- * laptop and a silver one are the same silhouette in two materials.
- *
- * Aluminium: a bright top edge catching light from above, falling to a darker
- * bottom, with a diagonal sheen across the face.
- */
+ 
 .dfs__chassis--aluminium {
   background:
     linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 45%),

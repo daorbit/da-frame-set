@@ -117,7 +117,7 @@ function Mock({
       {spec.camera === 'island' && <span className="dfs__island" />}
       {spec.foldSeam && <span className="dfs__fold-seam" />}
       {spec.homeIndicator && <span className="dfs__home" />}
-      {children}
+      <div className="dfs__viewport">{children}</div>
     </div>
   );
 
@@ -173,13 +173,12 @@ function Mock({
                 height={spec.chromeAbove}
                 variant={spec.browserChrome ?? 'mac'}
               />
-              {/* The chrome already occupies the space above the screen, so the
-                  screen must not reserve it a second time. */}
+          
               <div
                 className="dfs__screen"
                 style={{ width: spec.width, height: spec.height, borderRadius: 0 }}
               >
-                {children}
+                <div className="dfs__viewport">{children}</div>
               </div>
             </>
           ) : (
