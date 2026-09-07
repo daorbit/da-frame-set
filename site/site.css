@@ -604,6 +604,39 @@ body {
   font-size: 0.86em;
 }
 
+.feedback {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--section) clamp(16px, 3vw, 32px);
+}
+
+.feedback__inner {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.feedback h2 {
+  margin: 0 0 14px;
+  font-size: clamp(26px, 3vw, 42px);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.feedback p {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.feedback iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+
 .snippet__code {
   margin: 0;
   padding: 24px 26px;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   BookText,
   Check,
@@ -173,6 +173,14 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
         </pre>
       </section>
 
+      <section className="feedback">
+        <div className="feedback__inner">
+          <h2>Tell us what's missing.</h2>
+          <p>A device we don't cover, a bezel that's off, an API that fought you — send it here.</p>
+          <Feedback />
+        </div>
+      </section>
+
       <footer className="site-footer">
         <span>da-frame-set — MIT licensed</span>
         <a href="https://www.npmjs.com/package/da-frame-set" target="_blank" rel="noreferrer noopener">
@@ -180,6 +188,28 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
         </a>
       </footer>
     </>
+  );
+}
+
+function Feedback() {
+  const ref = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (e.data?.type !== 'da-forms:height') return;
+      if (ref.current) ref.current.style.height = `${e.data.height}px`;
+    }
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  return (
+    <iframe
+      ref={ref}
+      src="https://forms.daorbit.in/form/6a9e9380282c134d26c0f754/view"
+      title="Feedback"
+      style={{ width: '100%', height: 600, border: 0 }}
+    />
   );
 }
 
