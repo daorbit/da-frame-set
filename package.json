@@ -4,6 +4,14 @@
   "description": "Device frames for React — laptops, phones, tablets, monitors and browser chrome, drawn in CSS.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daorbit/da-frame-set.git"
+  },
+  "homepage": "https://github.com/daorbit/da-frame-set#readme",
+  "bugs": {
+    "url": "https://github.com/daorbit/da-frame-set/issues"
+  },
   "sideEffects": [
     "**/*.css"
   ],
