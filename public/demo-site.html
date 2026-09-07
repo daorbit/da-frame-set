@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulsegrid — Analytics that answers before you ask.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --bg: #FFFFFF;
+    --surface: #FFFFFF;
+    --surface-2: #FFF4EC;
+    --line: #F0E4DA;
+    --ink: #201A16;
+    --ink-dim: #746759;
+    --ink-faint: #A69A8C;
+    --accent: #F1662A;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #FFEDE0;
+    --coral: #F1662A;
+    --mint: #E2812E;
+    --radius: 18px;
+    --wrap: 1180px;
+    --shadow: 0 20px 45px -24px rgba(32,26,22,0.14);
+  }
+
+  *{box-sizing:border-box;}
+
+  /* Thin scrollbars, matching the app's. A default Windows scrollbar drawn
+     down the edge of a device mock reads as chrome rather than as part of the
+     page being previewed. */
+  *{
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,0.18) transparent;
+  }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner{ background:transparent; }
+  ::-webkit-scrollbar-thumb{
+    /* A transparent border clipped to the padding box leaves the thumb
+       visually thinner than the track it needs for a comfortable hit area. */
+    border:2px solid transparent;
+    border-radius:8px;
+    background-clip:padding-box;
+    background-color:rgba(255,255,255,0.18);
+  }
+  ::-webkit-scrollbar-thumb:hover{ background-color:rgba(255,255,255,0.3); }
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Manrope', 'Inter', sans-serif;
+    font-weight:700;
+    line-height:1.14;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  .wrap{
+    max-width:var(--wrap);
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  header.site{
+    position:sticky; top:0; z-index:50;
+    background:rgba(251,251,253,0.78);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:72px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:9px;
+    font-family:'Manrope'; font-weight:800; font-size:1.12rem;
+  }
+  .brand .dot{
+    width:22px; height:22px; border-radius:8px;
+    background:linear-gradient(135deg, var(--accent), var(--mint));
+  }
+  .nav-links{
+    display:flex; align-items:center; gap:32px;
+    font-size:0.93rem; color:var(--ink-dim); font-weight:500;
+  }
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{
+    display:flex; align-items:center; gap:16px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:11px 22px;
+    border-radius:11px;
+    font-size:0.92rem; font-weight:600;
+    border:1px solid transparent;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .btn-primary{
+    background:var(--ink); color:#fff;
+  }
+  .btn-primary:hover{ background:var(--accent); box-shadow:0 12px 24px -10px rgba(91,78,245,0.55); }
+  .btn-ghost{
+    color:var(--ink-dim); border-color:var(--line); background:var(--surface);
+  }
+  .btn-ghost:hover{ color:var(--ink); border-color:#CFCBEA; }
+  .menu-btn{
+    display:none;
+    background:var(--surface); border:1px solid var(--line); border-radius:9px;
+    width:42px; height:42px; color:var(--ink);
+    font-size:1.1rem; cursor:pointer;
+  }
+
+  .hero{
+    padding:84px 0 46px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; top:-260px; right:-220px;
+    width:640px; height:640px;
+    background:radial-gradient(circle, rgba(91,78,245,0.14), transparent 65%);
+    pointer-events:none;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; bottom:-160px; left:-180px;
+    width:420px; height:420px;
+    background:radial-gradient(circle, rgba(22,199,154,0.12), transparent 65%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    gap:56px;
+    align-items:center;
+    position:relative;
+  }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.82rem; color:var(--ink-dim); font-weight:500;
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:6px 14px 6px 8px;
+    border-radius:99px;
+    margin-bottom:24px;
+    box-shadow:var(--shadow);
+  }
+  .kicker span.tag{
+    background:var(--accent); color:#fff;
+    font-size:0.68rem; font-weight:700;
+    padding:2px 8px; border-radius:99px;
+  }
+  .hero h1{
+    font-size:clamp(1.7rem, 2.7vw, 2.4rem);
+    max-width:18ch;
+    color:var(--ink);
+  }
+  .hero .lede{
+    margin-top:16px;
+    font-size:0.97rem;
+    color:var(--ink-dim);
+    max-width:46ch;
+  }
+  .hero-actions{
+    display:flex; align-items:center; gap:16px;
+    margin-top:32px;
+  }
+  .hero-actions .btn{ padding:14px 26px; font-size:0.98rem; }
+  .no-card{ font-size:0.85rem; color:var(--ink-faint); margin-top:14px; }
+
+  .fact-row{
+    display:flex; flex-wrap:wrap;
+    gap:10px;
+    margin-top:36px;
+  }
+  .fact{
+    display:flex; align-items:baseline; gap:7px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:9px 14px;
+    border-radius:11px;
+    font-size:0.85rem;
+    color:var(--ink-dim);
+  }
+  .fact b{ font-family:'IBM Plex Mono'; color:var(--accent); font-weight:500; }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .dash{ padding:0; overflow:hidden; transform:rotate(0.4deg); }
+  .dash-top{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .dash-top .who{ font-size:0.82rem; color:var(--ink-dim); }
+  .dash-top .live{
+    display:flex; align-items:center; gap:6px;
+    font-size:0.78rem; color:var(--mint); font-weight:600;
+  }
+  .live .blip{
+    width:7px; height:7px; border-radius:50%; background:var(--mint);
+    box-shadow:0 0 0 3px rgba(22,199,154,0.2);
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; } 50%{ opacity:0.35; }
+  }
+  .dash-stats{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-bottom:1px solid var(--line);
+  }
+  .dstat{
+    padding:18px 20px;
+    border-right:1px solid var(--line);
+  }
+  .dstat:last-child{ border-right:none; }
+  .dstat .label{ font-size:0.74rem; color:var(--ink-faint); }
+  .dstat .value{
+    font-family:'IBM Plex Mono'; font-size:1.3rem; margin-top:5px; color:var(--ink); font-weight:500;
+  }
+  .dstat .delta{ font-size:0.74rem; color:var(--mint); margin-top:3px; font-weight:600; }
+  .dstat .delta.down{ color:var(--coral); }
+
+  .dash-chart{
+    padding:20px 20px 6px;
+  }
+  .bars{
+    display:flex; align-items:flex-end; gap:5px; height:90px;
+  }
+  .bars i{
+    flex:1;
+    background:linear-gradient(180deg, var(--accent), rgba(241,102,42,0.18));
+    border-radius:4px 4px 0 0;
+  }
+  .dash-rows{
+    padding:8px 20px 20px;
+    display:grid; gap:10px;
+  }
+  .row{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:0.83rem;
+  }
+  .row .name{ color:var(--ink-dim); }
+  .row .num{ font-family:'IBM Plex Mono'; color:var(--ink); }
+  .row .bar{
+    flex:1; height:5px; margin:0 12px;
+    background:var(--surface-2); border-radius:3px; overflow:hidden;
+  }
+  .row .bar span{
+    display:block; height:100%; background:var(--coral); border-radius:3px;
+  }
+
+  section{ padding:92px 0; }
+  section.divider{ border-top:1px solid var(--line); }
+  .section-head{
+    max-width:640px;
+    margin-bottom:50px;
+  }
+  .section-head h2{
+    font-size:clamp(1.35rem, 1.9vw, 1.7rem);
+  }
+  .section-head p{
+    margin-top:12px;
+    color:var(--ink-dim);
+    font-size:0.94rem;
+  }
+
+  .stack-strip{
+    display:flex; flex-wrap:wrap; gap:14px 32px;
+    padding:24px 0;
+    color:var(--ink-faint);
+    font-size:0.85rem; font-weight:500;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+
+  /* stat band */
+  .stat-band{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .stat-cell{
+    background:var(--surface);
+    padding:26px 22px;
+    text-align:left;
+  }
+  .stat-cell .big{
+    font-family:'Manrope'; font-weight:800; font-size:1.7rem; color:var(--accent);
+  }
+  .stat-cell .lab{
+    margin-top:6px; font-size:0.85rem; color:var(--ink-dim);
+  }
+
+  /* use cases */
+  .use-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:18px;
+  }
+  .use-card{
+    border:1px solid var(--line); border-radius:16px;
+    padding:22px 20px; background:var(--surface-2);
+  }
+  .use-card .icon{
+    width:34px; height:34px; border-radius:9px;
+    background:var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Manrope'; font-weight:700; font-size:0.9rem;
+    margin-bottom:14px;
+  }
+  .use-card h3{ font-size:0.96rem; }
+  .use-card p{ margin-top:7px; color:var(--ink-dim); font-size:0.85rem; }
+
+  .feat-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:18px;
+  }
+  .feat{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px 24px;
+  }
+  .feat .stat{
+    display:inline-block;
+    font-family:'IBM Plex Mono'; color:var(--accent);
+    font-size:0.82rem; margin-bottom:16px;
+    background:var(--accent-soft);
+    padding:4px 10px; border-radius:99px;
+  }
+  .feat h3{ font-size:0.98rem; }
+  .feat p{ margin-top:8px; color:var(--ink-dim); font-size:0.87rem; }
+
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:44px;
+    align-items:center;
+  }
+  .compare-visual{
+    display:grid; gap:14px;
+  }
+  .cbar-row{ display:grid; grid-template-columns:120px 1fr 46px; align-items:center; gap:12px; }
+  .cbar-row .lab{ font-size:0.85rem; color:var(--ink-dim); font-weight:500; }
+  .cbar-track{ background:var(--surface-2); border-radius:7px; height:15px; overflow:hidden; }
+  .cbar-fill{ height:100%; border-radius:7px; }
+  .cbar-row .pct{ font-family:'IBM Plex Mono'; font-size:0.85rem; text-align:right; }
+
+  .steps{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+  }
+  .step{
+    border:1px solid var(--line); border-radius:16px;
+    padding:28px 24px; background:var(--surface);
+  }
+  .step .idx{
+    font-family:'IBM Plex Mono'; color:var(--accent); font-size:0.85rem; font-weight:500;
+  }
+  .step h3{ margin-top:12px; font-size:0.97rem; }
+  .step p{ margin-top:8px; color:var(--ink-dim); font-size:0.87rem; }
+  .code-block{
+    margin-top:46px;
+    background:var(--ink);
+    border-radius:16px;
+    padding:20px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px;
+    overflow-x:auto;
+  }
+  .code-block code{
+    font-family:'IBM Plex Mono'; font-size:0.88rem; color:#B9FCE4; white-space:pre;
+  }
+  .copy-tag{
+    font-size:0.78rem; color:#B7B4C9; border:1px solid #3A3750;
+    padding:6px 12px; border-radius:8px; white-space:nowrap;
+  }
+
+  .price-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+  }
+  .price{
+    border:1px solid var(--line); border-radius:18px;
+    padding:30px 26px;
+    background:var(--surface);
+    display:flex; flex-direction:column;
+  }
+  .price.featured{
+    border-color:var(--accent);
+    background:linear-gradient(180deg, var(--accent-soft), var(--surface) 55%);
+    box-shadow:var(--shadow);
+  }
+  .price .plan-name{ font-size:0.95rem; color:var(--ink-dim); font-weight:600; }
+  .price .plan-price{
+    font-family:'Manrope'; font-size:1.8rem; margin-top:8px; font-weight:800;
+  }
+  .price .plan-price span{ font-size:0.9rem; color:var(--ink-faint); font-weight:500; }
+  .price ul{ list-style:none; padding:0; margin:24px 0 28px; display:grid; gap:11px; }
+  .price li{
+    font-size:0.9rem; color:var(--ink-dim);
+    padding-left:22px; position:relative;
+  }
+  .price li::before{
+    content:"✓"; position:absolute; left:0; color:var(--mint); font-weight:700;
+  }
+  .price .btn{ margin-top:auto; }
+
+  .testi{
+    max-width:760px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:40px 40px;
+    box-shadow:var(--shadow);
+  }
+  .testi p.quote{
+    font-family:'Manrope'; font-weight:600;
+    font-size:1.08rem; line-height:1.55; color:var(--ink);
+  }
+  .testi .who{
+    margin-top:22px; display:flex; align-items:center; gap:12px;
+    font-size:0.88rem; color:var(--ink-dim);
+  }
+  .avatar{
+    width:40px; height:40px; border-radius:11px;
+    background:linear-gradient(135deg, var(--accent), var(--mint));
+  }
+
+  .faq{ max-width:760px; display:grid; gap:12px; }
+  details{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:14px; padding:19px 22px;
+  }
+  details summary{
+    cursor:pointer; font-weight:600; font-size:0.98rem;
+    list-style:none; display:flex; justify-content:space-between; align-items:center;
+  }
+  details summary::-webkit-details-marker{ display:none; }
+  details summary::after{
+    content:"+"; color:var(--ink-faint); font-size:1.3rem; font-weight:400;
+  }
+  details[open] summary::after{ content:"–"; color:var(--accent); }
+  details p{ margin-top:13px; color:var(--ink-dim); font-size:0.92rem; }
+
+  .final-cta{
+    text-align:center;
+    padding:100px 0;
+    background:var(--surface-2);
+    border-radius:28px;
+    margin:0 20px;
+  }
+  .final-cta h2{
+    font-size:clamp(1.5rem, 2.6vw, 2.05rem);
+    max-width:20ch; margin:0 auto;
+  }
+  .final-cta .hero-actions{ justify-content:center; margin-top:32px; }
+
+  footer{ border-top:1px solid var(--line); padding:60px 0 34px; margin-top:20px; }
+  .foot-grid{
+    display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:30px;
+  }
+  .foot-brand p{ color:var(--ink-dim); font-size:0.9rem; margin-top:14px; max-width:32ch; }
+  .foot-col h4{ font-size:0.85rem; color:var(--ink); margin-bottom:14px; }
+  .foot-col a{ display:block; color:var(--ink-dim); font-size:0.88rem; margin-bottom:10px; }
+  .foot-col a:hover{ color:var(--ink); }
+  .foot-bottom{
+    margin-top:50px; padding-top:24px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-size:0.8rem; color:var(--ink-faint);
+  }
+
+  @media (max-width: 980px){
+    .hero-grid{ grid-template-columns:1fr; gap:44px; }
+    .feat-grid{ grid-template-columns:1fr 1fr; }
+    .compare{ grid-template-columns:1fr; }
+    .steps{ grid-template-columns:1fr; }
+    .price-grid{ grid-template-columns:1fr; max-width:420px; }
+    .foot-grid{ grid-template-columns:1fr 1fr; }
+    .dash{ transform:none; }
+    .stat-band{ grid-template-columns:1fr 1fr; }
+    .use-grid{ grid-template-columns:1fr 1fr; }
+  }
+
+  @media (max-width: 720px){
+    .nav-links{ display:none; }
+    .menu-btn{ display:block; }
+    .nav-cta .btn-ghost{ display:none; }
+    .hero{ padding:52px 0 30px; }
+    .feat-grid{ grid-template-columns:1fr; }
+    .dash-stats{ grid-template-columns:1fr 1fr; }
+    .dstat:nth-child(2){ border-right:none; }
+    .foot-grid{ grid-template-columns:1fr 1fr; }
+    section{ padding:56px 0; }
+    .code-block{ flex-direction:column; align-items:flex-start; }
+    .testi{ padding:30px 26px; }
+    .final-cta{ margin:0 12px; padding:60px 0; }
+    .stat-band{ grid-template-columns:1fr 1fr; }
+    .use-grid{ grid-template-columns:1fr; }
+  }
+
+  @media (max-width: 460px){
+    .wrap{ padding:0 18px; }
+    .hero-actions{ flex-direction:column; align-items:stretch; }
+    .fact-row{ gap:8px; }
+    .foot-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <nav class="wrap">
+    <a href="#" class="brand"><span class="dot"></span>Pulsegrid</a>
+    <div class="nav-links">
+      <a href="#features">Product</a>
+      <a href="#compare">Why Pulsegrid</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-ghost">Log in</a>
+      <a href="#pricing" class="btn btn-primary">Start free</a>
+      <button class="menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker"><span class="tag">New</span> Anomaly alerts now on every plan</div>
+      <h1>Traffic data that's ready before you refresh the page.</h1>
+      <p class="lede">Pulsegrid streams visitors, sources and page-level detail into one dashboard the moment they happen — no sampling, no overnight delay, no cookie banner to fight over.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-primary">Start free — no card</a>
+        <a href="#" class="btn btn-ghost">View a live workspace</a>
+      </div>
+      <p class="no-card">Free up to 10k events a month. Upgrade only when you outgrow it.</p>
+
+      <div class="fact-row">
+        <div class="fact">First data in <b>~2s</b></div>
+        <div class="fact">Tracker under <b>1&nbsp;KB</b></div>
+        <div class="fact"><b>0</b> cookies set</div>
+      </div>
+    </div>
+
+    <div class="panel dash">
+      <div class="dash-top">
+        <div class="who">acme.io · <span class="mono">318</span> online now</div>
+        <div class="live"><span class="blip"></span>live</div>
+      </div>
+      <div class="dash-stats">
+        <div class="dstat">
+          <div class="label">Visitors</div>
+          <div class="value">9,214</div>
+          <div class="delta">+14.6%</div>
+        </div>
+        <div class="dstat">
+          <div class="label">Sessions</div>
+          <div class="value">11,880</div>
+          <div class="delta">+9.1%</div>
+        </div>
+        <div class="dstat">
+          <div class="label">Bounce</div>
+          <div class="value">31%</div>
+          <div class="delta down">−4.3%</div>
+        </div>
+      </div>
+      <div class="dash-chart">
+        <div class="bars">
+          <i style="height:38%"></i><i style="height:52%"></i><i style="height:44%"></i>
+          <i style="height:63%"></i><i style="height:58%"></i><i style="height:71%"></i>
+          <i style="height:60%"></i><i style="height:82%"></i><i style="height:76%"></i>
+          <i style="height:90%"></i><i style="height:68%"></i><i style="height:84%"></i>
+        </div>
+      </div>
+      <div class="dash-rows">
+        <div class="row"><span class="name">/pricing</span><span class="bar"><span style="width:78%"></span></span><span class="num">3,102</span></div>
+        <div class="row"><span class="name">/docs/quickstart</span><span class="bar"><span style="width:54%"></span></span><span class="num">2,140</span></div>
+        <div class="row"><span class="name">/blog/launch</span><span class="bar"><span style="width:36%"></span></span><span class="num">1,408</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stack-strip">
+      <span>Next.js</span><span>React</span><span>Vue</span><span>Svelte</span>
+      <span>WordPress</span><span>Shopify</span><span>Webflow</span><span>Plain HTML</span>
+    </div>
+  </div>
+</section>
+
+<section class="divider" style="padding:60px 0;">
+  <div class="wrap">
+    <div class="stat-band">
+      <div class="stat-cell">
+        <div class="big">4,200+</div>
+        <div class="lab">sites tracked</div>
+      </div>
+      <div class="stat-cell">
+        <div class="big">38M</div>
+        <div class="lab">events a month</div>
+      </div>
+      <div class="stat-cell">
+        <div class="big">99.98%</div>
+        <div class="lab">uptime last year</div>
+      </div>
+      <div class="stat-cell">
+        <div class="big">~2s</div>
+        <div class="lab">to first data point</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Everything a growth team checks daily, in one screen.</h2>
+      <p>No report builder to configure and no dashboard to assemble first. Open it and the numbers that matter are already on screen.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <span class="stat mono">~2s</span>
+        <h3>Data as it happens</h3>
+        <p>Every pageview and event streams straight to the dashboard. Nothing is batched or delayed overnight.</p>
+      </div>
+      <div class="feat">
+        <span class="stat mono">0 cookies</span>
+        <h3>No banner required</h3>
+        <p>Visitors are identified with a hash that rotates daily, so there's no personal data to ask permission for.</p>
+      </div>
+      <div class="feat">
+        <span class="stat mono">&lt;1 KB</span>
+        <h3>A tracker you forget about</h3>
+        <p>One async script tag. It hooks into client-side routing automatically, so single-page apps just work.</p>
+      </div>
+      <div class="feat">
+        <span class="stat mono">Custom</span>
+        <h3>Events and goals</h3>
+        <p>One line of code turns any action into a tracked event with its own conversion rate over time.</p>
+      </div>
+      <div class="feat">
+        <span class="stat mono">Shared</span>
+        <h3>Dashboards clients can open</h3>
+        <p>Publish a read-only link with no account needed. Pick exactly which panels are visible on it.</p>
+      </div>
+      <div class="feat">
+        <span class="stat mono">API</span>
+        <h3>Built for reselling</h3>
+        <p>Every number in the dashboard is reachable over REST, so you can build your own views on top.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="divider">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Built for the teams already juggling five other tools.</h2>
+      <p>Same dashboard, different reason to open it depending on who you are.</p>
+    </div>
+    <div class="use-grid">
+      <div class="use-card">
+        <div class="icon">A</div>
+        <h3>Agencies</h3>
+        <p>One workspace per client, shared as a read-only link they can check anytime.</p>
+      </div>
+      <div class="use-card">
+        <div class="icon">S</div>
+        <h3>SaaS founders</h3>
+        <p>Watch signups and activation move in real time without wiring up a BI tool.</p>
+      </div>
+      <div class="use-card">
+        <div class="icon">M</div>
+        <h3>Marketers</h3>
+        <p>See which campaign or post actually drove the traffic, down to the referrer.</p>
+      </div>
+      <div class="use-card">
+        <div class="icon">D</div>
+        <h3>Developers</h3>
+        <p>Pull every metric over the API and build the internal view you actually want.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="compare" class="divider">
+  <div class="wrap compare">
+    <div>
+      <div class="section-head" style="margin-bottom:26px;">
+        <h2>Cookie-based tools only count who says yes.</h2>
+        <p>Anyone who ignores the banner, declines it, or blocks trackers disappears from the report entirely — and that group skews toward exactly the audience most products care about.</p>
+      </div>
+      <p style="color:var(--ink-dim); font-size:0.92rem;">Pulsegrid reads what the server already sees — no script has to wait for permission.</p>
+    </div>
+    <div class="compare-visual panel" style="padding:28px 26px;">
+      <div class="cbar-row">
+        <span class="lab">Cookie-based tool</span>
+        <div class="cbar-track"><div class="cbar-fill" style="width:58%; background:var(--coral);"></div></div>
+        <span class="pct">58%</span>
+      </div>
+      <div class="cbar-row">
+        <span class="lab">Ad blocker active</span>
+        <div class="cbar-track"><div class="cbar-fill" style="width:31%; background:#F5B650;"></div></div>
+        <span class="pct">31%</span>
+      </div>
+      <div class="cbar-row">
+        <span class="lab">Pulsegrid</span>
+        <div class="cbar-track"><div class="cbar-fill" style="width:100%; background:var(--mint);"></div></div>
+        <span class="pct">100%</span>
+      </div>
+      <p style="margin-top:8px; font-size:0.8rem; color:var(--ink-faint);">Illustrative — actual consent rates vary by region and audience.</p>
+    </div>
+  </div>
+</section>
+
+<section id="setup" class="divider">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Three steps. About two minutes.</h2>
+      <p>No SDK, no build change, no policy to rewrite before you can turn it on.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="idx">01</div>
+        <h3>Create a site</h3>
+        <p>Sign up and add a domain. You get a public site key immediately, no verification wait.</p>
+      </div>
+      <div class="step">
+        <div class="idx">02</div>
+        <h3>Drop in the tag</h3>
+        <p>Paste one async script into your page head. It blocks nothing and adds no visible delay.</p>
+      </div>
+      <div class="step">
+        <div class="idx">03</div>
+        <h3>Watch it live</h3>
+        <p>Open the dashboard. Your own visit is usually the first pageview you'll see land.</p>
+      </div>
+    </div>
+    <div class="code-block">
+      <code>&lt;script async src="https://cdn.pulsegrid.io/t.js" data-site="pg_4k91v"&gt;&lt;/script&gt;</code>
+      <span class="copy-tag">Copy</span>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="divider">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Plans that scale with your sites, not your headcount.</h2>
+      <p>Every plan gets the full dashboard. Nothing is held back to sell you an upgrade.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price">
+        <span class="plan-name">Hobby</span>
+        <div class="plan-price">$0<span>/mo</span></div>
+        <ul>
+          <li>1 site, up to 10k events/mo</li>
+          <li>Real-time dashboard</li>
+          <li>7-day data retention</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Start free</a>
+      </div>
+      <div class="price featured">
+        <span class="plan-name">Growth</span>
+        <div class="plan-price">$19<span>/mo</span></div>
+        <ul>
+          <li>10 sites, up to 500k events/mo</li>
+          <li>Custom events & goals</li>
+          <li>Shared read-only dashboards</li>
+          <li>1-year data retention</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Start free trial</a>
+      </div>
+      <div class="price">
+        <span class="plan-name">Agency</span>
+        <div class="plan-price">$49<span>/mo</span></div>
+        <ul>
+          <li>Unlimited sites</li>
+          <li>Full REST API access</li>
+          <li>White-label client reports</li>
+          <li>Unlimited retention</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="divider">
+  <div class="wrap">
+    <div class="testi">
+      <p class="quote">We moved three client sites over in an afternoon. The dashboard is the one thing everyone on the team actually opens without being asked.</p>
+      <div class="who">
+        <div class="avatar"></div>
+        <div>Renu Kapoor — runs a small web studio</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="divider">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Questions people actually ask</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Do I need a cookie consent banner?</summary>
+        <p>No. Pulsegrid doesn't set cookies or write to local storage, so there's no personal data to ask permission for.</p>
+      </details>
+      <details>
+        <summary>Will it work with my React or Next.js app?</summary>
+        <p>Yes. The tracker hooks into client-side navigation automatically, so route changes are reported without extra code.</p>
+      </details>
+      <details>
+        <summary>Can I share a dashboard with a client?</summary>
+        <p>Yes — publish a read-only link that opens without an account, and choose exactly which panels are visible on it.</p>
+      </details>
+      <details>
+        <summary>Can I export the raw data?</summary>
+        <p>Yes, from the dashboard at any time, or by calling the same API the dashboard itself is built on.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="wrap">
+    <h2>Your first pageview is about two minutes away.</h2>
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary">Start free — no card</a>
+      <a href="#" class="btn btn-ghost">Read the docs</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand"><span class="dot"></span>Pulsegrid</a>
+        <p>Real-time, cookieless web analytics for teams who'd rather look at one screen than build a report.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#setup">Setup</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Pulsegrid. All rights reserved.</span>
+      <span>No cookies. No cross-site tracking.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

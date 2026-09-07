@@ -1,0 +1,713 @@
+/*
+ * Hardware frames drawn in CSS.
+ *
+ * Every measurement that affects the mock's outer size is set inline by the
+ * component from the device spec — bezel, radii, chrome heights, overhang — so
+ * `frameSize()` and the rendered frame cannot disagree. What lives here is the
+ * material: the metal, the glass, the shadows.
+ */
+
+/*
+ * The swap stage.
+ *
+ * Carries the mock's footprint, so the surrounding layout eases toward the new
+ * device's size while the frame itself is animating.
+ */
+.dfs-swap {
+  position: relative;
+  flex-shrink: 0;
+  transition: width 260ms cubic-bezier(0.4, 0, 0.2, 1),
+    height 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dfs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  flex-shrink: 0;
+  /* Centred on the stage, so devices of different sizes settle about the same
+     point rather than growing out of a shared corner. */
+  transform: translate(-50%, -50%);
+}
+
+/*
+ * A device change is one mock changing, not two mocks crossing.
+ *
+ * The frame dips out to the left, the component swaps the chassis at the
+ * midpoint while nothing is visible, and it settles back in from the right.
+ * Only one mock is ever mounted, so an iframe on the screen is never torn down
+ * and never repaints white — which is what read as a flicker.
+ */
+.dfs-swap--busy .dfs {
+  animation: dfsSwap 260ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes dfsSwap {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateX(0) scale(1);
+  }
+  45% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(-22px) scale(0.97);
+  }
+  55% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(22px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dfs-swap {
+    transition: none;
+  }
+
+  .dfs-swap--busy .dfs {
+    animation: none;
+  }
+}
+
+/* Scaled by the container; pinned to the wrapper's top-left so the wrapper's
+   own (already scaled) box is the only thing taking up room. */
+.dfs__inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top left;
+}
+
+.dfs__chassis {
+  position: relative;
+  box-sizing: content-box;
+}
+
+.dfs__screen {
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #ffffff;
+  /* The mock stands in for hardware — a scrollbar drawn down its screen edge
+     reads as chrome, not as part of the previewed page. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dfs__screen::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * An iframe is inline-level by default, so it sits on the text baseline and
+ * leaves a gap beneath it — a white strip along the bottom of the screen,
+ * exactly where a device would show none.
+ */
+.dfs__screen > iframe {
+  display: block;
+  border: 0;
+}
+
+/* ------------------------------------------------------------ materials -- */
+
+/*
+ * Finish is chosen per device rather than per chassis kind, so a space-black
+ * laptop and a silver one are the same silhouette in two materials.
+ *
+ * Aluminium: a bright top edge catching light from above, falling to a darker
+ * bottom, with a diagonal sheen across the face.
+ */
+.dfs__chassis--aluminium {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #4a4e55 0%, #35383e 40%, #24272c 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 24px 60px rgba(0, 0, 0, 0.42);
+}
+
+/* Titanium: lighter than the aluminium, with a harder highlight on the band. */
+.dfs__chassis--titanium {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(180deg, #55585f 0%, #34373d 45%, #26282d 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* The black glass the display sits under, inset just past the chassis edge.
+   The browser chassis is a window, not hardware, so it gets no glass. */
+.dfs__chassis--laptop::before,
+.dfs__chassis--tablet::before,
+.dfs__chassis--phone::before,
+.dfs__chassis--watch::before,
+.dfs__chassis--monitor::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  background-color: #050607;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- cameras -- */
+
+/* Cut into the bezel rather than floating over the page, which is what a real
+   notch does — the display wraps around it. */
+.dfs__notch {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  z-index: 2;
+  width: 132px;
+  height: 15px;
+  transform: translateX(-50%);
+  border-radius: 0 0 8px 8px;
+  background-color: #050607;
+}
+
+.dfs__notch::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #2f3540 0%, #0a0c0f 70%);
+}
+
+/* A lens in the bezel, above the screen. */
+.dfs__dot {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 2;
+  width: 6px;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #2f3540 0%, #0a0c0f 70%);
+}
+
+/* Floats over the page, like the real one. */
+.dfs__island {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 3;
+  width: 106px;
+  height: 30px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background-color: #050607;
+}
+
+/* Punched through the display itself, so it sits on the screen, not the bezel. */
+.dfs__punch-hole {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 3;
+  width: 11px;
+  height: 11px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background-color: #050607;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.dfs__home {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  z-index: 3;
+  width: 132px;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.35);
+  /* Stays visible over a light or a dark page. */
+  mix-blend-mode: difference;
+}
+
+/* -------------------------------------------------------- side buttons -- */
+
+/* Drawn just outside the chassis so they read as raised hardware rather than
+   as marks on the band. */
+.dfs__btn {
+  position: absolute;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #5c5f66, #34373c);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.dfs__btn--silence,
+.dfs__btn--vol-up,
+.dfs__btn--vol-down {
+  left: -3px;
+  border-radius: 2px 0 0 2px;
+}
+
+.dfs__btn--silence {
+  top: 108px;
+  height: 32px;
+}
+
+.dfs__btn--vol-up {
+  top: 160px;
+  height: 58px;
+}
+
+.dfs__btn--vol-down {
+  top: 232px;
+  height: 58px;
+}
+
+.dfs__btn--power {
+  top: 190px;
+  right: -3px;
+  height: 96px;
+  border-radius: 0 2px 2px 0;
+}
+
+/* --------------------------------------------------------- laptop base -- */
+
+/*
+ * The base, seen edge-on with the lid open. It sticks out past the lid on both
+ * sides — the overhang is set inline so the measured width accounts for it.
+ */
+.dfs__base {
+  position: relative;
+  align-self: stretch;
+  border-radius: 0 0 10px 10px;
+  /* The top edge catches light from the open lid; the front lip falls into
+     shadow, which is what gives the wedge its taper. */
+  background: linear-gradient(180deg, #52565d 0%, #3a3d43 22%, #2a2d32 60%, #14161a 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 18px 34px rgba(0, 0, 0, 0.5);
+}
+
+/* The shadow the open lid casts onto the base's back edge. */
+.dfs__base::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 26px;
+  left: 26px;
+  height: 4px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+
+/* The notch in the front edge, where a thumb opens the lid. */
+.dfs__base::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 120px;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 0 0 7px 7px;
+  background-color: #0a0b0d;
+}
+
+/* ------------------------------------------------------- monitor stand -- */
+
+.dfs__stand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.dfs__stand-neck {
+  flex: 1;
+  width: 96px;
+  background: linear-gradient(90deg, #33363c 0%, #4b4f57 50%, #2c2f34 100%);
+}
+
+.dfs__stand-foot {
+  width: 260px;
+  height: 10px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #4b4f57 0%, #2a2d32 100%);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ------------------------------------------------------ browser chrome -- */
+
+.dfs__chassis--browser,
+.dfs__chassis--browser.dfs__chassis--aluminium {
+  background: #dfe1e5;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+}
+
+.dfs__traffic {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.dfs__traffic-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+}
+
+.dfs__traffic-dot--close {
+  background-color: #ff5f57;
+}
+
+.dfs__traffic-dot--min {
+  background-color: #febc2e;
+}
+
+.dfs__traffic-dot--max {
+  background-color: #28c840;
+}
+
+/* The address bar. Truncates rather than wrapping — the chrome is a fixed
+   height the frame measurement already accounts for. */
+.dfs__omnibox {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: #5f6368;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ materials -- */
+
+/* Graphite: the near-black finish of a space-black laptop or a TV bezel. */
+.dfs__chassis--graphite {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(180deg, #33363b 0%, #22252a 45%, #14161a 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* -------------------------------------------------------- camera bumps -- */
+
+/*
+ * The camera housing, seen from the front as a raised block behind the top
+ * corner of the chassis. Drawn behind, so only its edge shows.
+ */
+.dfs__bump {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  z-index: 0;
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, #3d4046 0%, #24272c 60%, #16181c 100%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* --------------------------------------------------------- fold seams -- */
+
+/*
+ * The crease down the middle of an unfolded foldable. Barely there, which is
+ * what the real thing looks like under a lit display.
+ */
+.dfs__fold-seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 3;
+  width: 10px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.06) 45%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(0, 0, 0, 0.06) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* --------------------------------------------------- laptop speakers -- */
+
+/*
+ * The speaker grilles either side of the keyboard, seen edge-on as a band of
+ * perforations on the base.
+ */
+.dfs__grille {
+  position: absolute;
+  top: 3px;
+  width: 90px;
+  height: 5px;
+  border-radius: 2px;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.55) 0.6px, transparent 0.6px);
+  background-size: 3px 3px;
+  opacity: 0.7;
+}
+
+.dfs__grille--left {
+  left: 60px;
+}
+
+.dfs__grille--right {
+  right: 60px;
+}
+
+/* ------------------------------------------------------------- watches -- */
+
+.dfs__chassis--watch {
+  position: relative;
+  /* Above the straps, so the case sits over them. */
+  z-index: 2;
+}
+
+/*
+ * The digital crown, on the right edge — the single detail that reads as a
+ * watch rather than as a very small phone.
+ */
+.dfs__crown {
+  position: absolute;
+  top: 32%;
+  right: -6px;
+  z-index: 3;
+  width: 7px;
+  height: 26px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #6a6e76 0%, #3c4046 55%, #2a2d33 100%);
+  /* The ridges milled around a real crown. */
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0 1px,
+    rgba(255, 255, 255, 0.12) 1px 2px
+  );
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.dfs__crown-btn {
+  position: absolute;
+  top: 52%;
+  right: -4px;
+  z-index: 3;
+  width: 4px;
+  height: 34px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #5c5f66, #34373c);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+/* The band, tapering away above and below the case. */
+.dfs__strap {
+  position: absolute;
+  left: 50%;
+  z-index: 0;
+  width: 62%;
+  height: 90px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #3a3d43 0%, #26282d 100%);
+}
+
+.dfs__strap--top {
+  top: -84px;
+  border-radius: 14px 14px 4px 4px;
+}
+
+.dfs__strap--bottom {
+  bottom: -84px;
+  border-radius: 4px 4px 14px 14px;
+}
+
+/* ----------------------------------------------------------------- tv -- */
+
+.dfs__chassis--tv,
+.dfs__chassis--tv.dfs__chassis--graphite {
+  /* A modern set is nearly all screen, with a thin dark surround. */
+  background: linear-gradient(180deg, #26282d 0%, #1a1c20 60%, #101216 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 30px 70px rgba(0, 0, 0, 0.5);
+}
+
+.dfs__tv-stand {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  align-self: stretch;
+}
+
+/* A soundbar-style speaker strip under the panel. */
+.dfs__soundbar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 46%;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  background-color: #1c1e23;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0.7px, transparent 0.7px);
+  background-size: 4px 4px;
+}
+
+/* Two splayed feet rather than a central stand, which is what most sets use. */
+.dfs__tv-foot {
+  position: absolute;
+  bottom: 0;
+  width: 90px;
+  height: 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #3a3d43 0%, #1d1f24 100%);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4);
+}
+
+.dfs__tv-foot--left {
+  left: 12%;
+  transform: skewX(18deg);
+}
+
+.dfs__tv-foot--right {
+  right: 12%;
+  transform: skewX(-18deg);
+}
+
+/* ------------------------------------------------ browser chrome (v2) -- */
+
+.dfs__browser-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+}
+
+.dfs__browser-bar--mac {
+  background: linear-gradient(180deg, #e6e7ea 0%, #dcdee2 100%);
+}
+
+/* Windows draws a flatter, cooler bar with square-ish tabs. */
+.dfs__browser-bar--windows {
+  background: linear-gradient(180deg, #d9dce1 0%, #cfd2d8 100%);
+}
+
+.dfs__browser-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+}
+
+.dfs__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 132px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 8px 8px 0 0;
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+.dfs__browser-bar--windows .dfs__tab {
+  border-radius: 6px 6px 0 0;
+}
+
+.dfs__tab--active {
+  background-color: #ffffff;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dfs__favicon {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: #b9bec7;
+}
+
+.dfs__win-controls {
+  display: flex;
+  gap: 14px;
+  margin-left: auto;
+  padding-right: 4px;
+}
+
+.dfs__win-btn {
+  width: 10px;
+  height: 10px;
+  background-color: #6b7078;
+}
+
+/* Windows controls are glyphs, not dots: a line, a square, a cross. */
+.dfs__win-btn--min {
+  height: 1px;
+  align-self: center;
+}
+
+.dfs__win-btn--max {
+  height: 9px;
+  background-color: transparent;
+  border: 1px solid #6b7078;
+}
+
+.dfs__win-btn--close {
+  background-color: transparent;
+  background-image:
+    linear-gradient(45deg, transparent 45%, #6b7078 45% 55%, transparent 55%),
+    linear-gradient(-45deg, transparent 45%, #6b7078 45% 55%, transparent 55%);
+}
+
+.dfs__browser-address {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 26px;
+}
+
+.dfs__nav-dots {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+  padding-left: 4px;
+}
+
+/* Back and forward, drawn as chevrons. */
+.dfs__nav-arrow {
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid #74797f;
+  border-right: 1.5px solid #74797f;
+}
+
+.dfs__nav-arrow--back {
+  transform: rotate(-135deg);
+}
+
+.dfs__nav-arrow--forward {
+  transform: rotate(45deg);
+  opacity: 0.45;
+}

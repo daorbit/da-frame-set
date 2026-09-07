@@ -1,0 +1,1431 @@
+/* The documentation site. Not shipped in the package. */
+
+/*
+ * Warm Tangerine — a warm-white developer theme with a tangerine accent.
+ *
+ * The ground is warm off-white rather than pure white, so the device mocks sit
+ * on a surface instead of dissolving into the page.
+ */
+:root {
+  --brand-50: #fff7f2;
+  --brand-100: #ffebdd;
+  --brand-200: #ffd4ba;
+  --brand-300: #ffb58c;
+  --brand-400: #ff8a55;
+  --brand-500: #f45d22;
+  --brand-600: #e24b12;
+  --brand-700: #be3c0c;
+
+  --bg: #fcfbf9;
+  --hero-bg: #fffdfb;
+  --panel: #ffffff;
+  --sunken: #f7f5f2;
+  --accent-surface: #fff4ec;
+
+  --fg: #171717;
+  --muted: #66635f;
+  --faint: #8c8882;
+  --brand: #e24b12;
+
+  --border: #e8e4df;
+  --border-subtle: #f0ede9;
+  --border-strong: #d9d3cc;
+  --border-accent: #ffb58c;
+
+  --code-bg: #f5f2ee;
+  --code-fg: #2c2926;
+  --code-line: #e5e0da;
+  --code-keyword: #a13b8e;
+  --code-string: #168a55;
+  --code-fn: #c45118;
+  --code-comment: #96908a;
+
+  --accent-gradient: linear-gradient(135deg, #f45d22 0%, #ff8a55 100%);
+  --text-gradient: linear-gradient(90deg, #e24b12 0%, #f45d22 55%, #ff8a55 100%);
+  --hero-glow: radial-gradient(
+    circle at 75% 45%,
+    rgba(244, 93, 34, 0.12) 0%,
+    rgba(244, 93, 34, 0.04) 28%,
+    transparent 62%
+  );
+  --soft-divider: linear-gradient(90deg, transparent, #e8e4df, transparent);
+  --focus-ring: 0 0 0 3px rgba(244, 93, 34, 0.2);
+
+  --card-shadow: 0 8px 30px rgba(31, 24, 19, 0.06);
+  --card-shadow-hover: 0 14px 40px rgba(31, 24, 19, 0.1);
+  --btn-shadow: 0 8px 24px rgba(244, 93, 34, 0.18);
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --r-pill: 999px;
+
+  --container: 1480px;
+  --section: clamp(56px, 8vw, 112px);
+
+  --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Thin scrollbars everywhere, matching the editor's. A default Windows
+   scrollbar down a narrow rail is wider than the content it sits beside. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* A transparent border clipped to the padding box leaves the thumb visually
+     thinner than the track it needs for a comfortable hit area. */
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
+  background-color: var(--border-strong);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* The playground owns the viewport; only its stage and rail scroll. */
+.app--fixed {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app__main {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------- topbar -- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: clamp(14px, 2.5vw, 28px);
+  height: 62px;
+  /* Matches the hero's side padding, so the brand lines up with the headline. */
+  padding: 0 clamp(14px, 1.6vw, 24px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.82);
+  /* Content scrolls under the bar rather than meeting a hard opaque edge. */
+  backdrop-filter: saturate(180%) blur(14px);
+}
+
+.topbar__brand {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+/* A miniature of the thing the package draws. */
+.topbar__mark {
+  position: relative;
+  display: block;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--fg);
+  border-radius: 7px;
+}
+
+.topbar__mark::before {
+  content: '';
+  position: absolute;
+  inset: 4px 4px 7px;
+  border-radius: 2px;
+  background-color: var(--fg);
+  opacity: 0.18;
+}
+
+.topbar__mark::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 10px;
+  height: 1.5px;
+  transform: translateX(-50%);
+  border-radius: 1px;
+  background-color: var(--fg);
+}
+
+.topbar__nav {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+}
+
+.topbar__link {
+  padding: 7px 14px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  transition: color 130ms ease, background-color 130ms ease;
+}
+
+.topbar__link:hover {
+  background-color: var(--sunken);
+  color: var(--fg);
+}
+
+.topbar__link--active,
+.topbar__link--active:hover {
+  background-color: var(--accent-surface);
+  color: var(--brand);
+  font-weight: 550;
+}
+
+.topbar__link:focus-visible,
+.topbar__brand:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.topbar__end {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.topbar__version {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.topbar__npm {
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.topbar__npm:hover {
+  color: var(--fg);
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    gap: 12px;
+  }
+
+  .topbar__version {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ home -- */
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(36px, 5vw, 56px);
+  align-items: center;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: clamp(32px, 4.5vw, 64px) clamp(14px, 1.6vw, 24px) clamp(36px, 4vw, 56px);
+  background: var(--hero-bg);
+}
+
+/* The warm glow behind the device mock. Painted behind everything, and never
+   catching pointer events. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--hero-glow);
+  pointer-events: none;
+}
+
+.hero > * {
+  position: relative;
+}
+
+@media (min-width: 940px) {
+  .hero {
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+    gap: clamp(28px, 3vw, 48px);
+  }
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--r-pill);
+  background-color: var(--brand-50);
+  color: var(--brand);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.hero__eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background-color: var(--brand-500);
+}
+
+.hero__title {
+  margin: 0 0 18px;
+  font-size: clamp(34px, 4.6vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.hero__title-accent {
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero__lede {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: clamp(15px, 0.5vw + 14px, 17px);
+  line-height: 1.65;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 30px 0 22px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background-color: var(--panel);
+  color: #292725;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 550;
+  transition: background-color 130ms ease, border-color 130ms ease, box-shadow 130ms ease;
+}
+
+.btn:hover {
+  background-color: var(--brand-50);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn--primary {
+  border-color: transparent;
+  background-color: var(--brand-500);
+  color: #ffffff;
+  box-shadow: var(--btn-shadow);
+}
+
+.btn--primary:hover {
+  background-color: var(--brand-600);
+}
+
+.btn--ghost {
+  border-color: var(--border-strong);
+}
+
+/* Icons sit on the text baseline by default, which leaves them a pixel low
+   against the label. */
+.btn svg,
+.hero__copy-btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.btn:not(.btn--primary) svg {
+  color: var(--muted);
+}
+
+.hero__install {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 7px 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background-color: var(--code-bg);
+}
+
+.hero__install code {
+  color: var(--code-fg);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.hero__prompt {
+  margin-right: -4px;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.hero__copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background-color: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.hero__copy-btn:hover {
+  border-color: var(--border-accent);
+  color: var(--brand);
+}
+
+.hero__demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.hero__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: clamp(320px, 36vw, 500px);
+}
+
+/* The demo page on the device's screen, filling it exactly. */
+.hero__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.hero__switch {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background-color: var(--panel);
+  box-shadow: var(--card-shadow);
+}
+
+.hero__switch-btn {
+  padding: 7px 15px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+
+.hero__switch-btn:hover {
+  color: var(--fg);
+}
+
+.hero__switch-btn--active,
+.hero__switch-btn--active:hover {
+  background-color: var(--brand-500);
+  color: #ffffff;
+  font-weight: 550;
+}
+
+@media (max-width: 939px) {
+  .hero {
+    text-align: center;
+  }
+
+  .hero__lede {
+    margin: 0 auto;
+  }
+
+  .hero__actions,
+  .hero__install {
+    justify-content: center;
+  }
+
+  .hero__actions {
+    margin-inline: auto;
+  }
+}
+
+/* A four-up row of icon-led points, as on the reference. */
+.features {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg);
+}
+
+.features__inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: clamp(24px, 3vw, 40px);
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: clamp(32px, 4vw, 52px) clamp(16px, 3vw, 32px);
+}
+
+.features__item {
+  position: relative;
+}
+
+/* Hairline rules between columns, dropped on the first of each row by the
+   grid itself wrapping — a border on the item would leave a stray edge. */
+.features__item + .features__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(-20px, -1.5vw, -12px);
+  width: 1px;
+  background-color: var(--border-subtle);
+}
+
+.features__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--r-md);
+  background-color: var(--accent-surface);
+  color: var(--brand);
+}
+
+.features__item h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.features__item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.snippet {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(28px, 4vw, 48px);
+  align-items: center;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--section) clamp(16px, 3vw, 32px);
+}
+
+@media (min-width: 900px) {
+  .snippet {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
+}
+
+.snippet h2 {
+  margin: 0 0 14px;
+  font-size: clamp(26px, 3vw, 42px);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.snippet__copy p {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.snippet__copy code {
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  background-color: var(--code-bg);
+  color: var(--code-fn);
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+.snippet__code {
+  margin: 0;
+  padding: 24px 26px;
+  border: 1px solid var(--code-line);
+  border-radius: var(--r-xl);
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-x: auto;
+}
+
+.tok-kw {
+  color: var(--code-keyword);
+}
+
+.tok-str {
+  color: var(--code-string);
+}
+
+.tok-fn {
+  color: var(--code-fn);
+}
+
+.tok-com {
+  color: var(--code-comment);
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 28px clamp(16px, 3vw, 32px) 56px;
+  border-top: 1px solid var(--border);
+  color: var(--faint);
+  font-size: 13px;
+}
+
+.site-footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--brand);
+}
+
+/* ------------------------------------------------------------------ docs -- */
+
+.docs {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 56px;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 56px 24px 120px;
+}
+
+.docs__toc {
+  position: sticky;
+  top: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-self: start;
+  /* The rule runs the height of the list, with each link's own left padding
+     holding it off the text. */
+  border-left: 1px solid var(--border);
+}
+
+.docs__toc-title {
+  margin-bottom: 10px;
+  padding-left: 14px;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.docs__toc a {
+  padding: 5px 0 5px 14px;
+  margin-left: -1px;
+  border-left: 1px solid transparent;
+  color: var(--muted);
+  font-size: 13.5px;
+  text-decoration: none;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.docs__toc a:hover {
+  border-left-color: var(--border-accent);
+  color: var(--brand);
+}
+
+.docs__body h1 {
+  margin: 0 0 12px;
+  font-size: 38px;
+  font-weight: 640;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.docs__lede {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.62;
+}
+
+.docs__body h2 {
+  margin: 52px 0 14px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 21px;
+  font-weight: 620;
+  letter-spacing: -0.024em;
+  /* Clears the sticky topbar when jumped to from the contents. */
+  scroll-margin-top: 76px;
+}
+
+.docs__body p {
+  margin: 0 0 15px;
+  color: #3a3a41;
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.docs__body code {
+  padding: 1.5px 5px;
+  border-radius: 5px;
+  background-color: var(--sunken);
+  color: #33333a;
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+.docs__code {
+  margin: 0 0 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--code-line);
+  border-radius: 12px;
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--mono);
+  font-size: 12.75px;
+  line-height: 1.72;
+  overflow-x: auto;
+}
+
+.docs__code code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.docs__callout {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--brand-400);
+  border-radius: 10px;
+  background-color: var(--panel);
+  color: #3a3a41;
+  font-size: 14px;
+  line-height: 1.66;
+}
+
+.docs__callout--warn {
+  border-left-color: #b7791f;
+  background-color: #fff7df;
+}
+
+/* A wide table scrolls inside its own box rather than widening the page. */
+.docs__table-wrap {
+  margin-bottom: 22px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: var(--panel);
+}
+
+.docs__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.docs__table th,
+.docs__table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.docs__table td:last-child {
+  color: var(--muted);
+  white-space: normal;
+}
+
+.docs__table th {
+  background-color: var(--sunken);
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docs__table tr:last-child td {
+  border-bottom: 0;
+}
+
+.docs__table code {
+  font-size: 12.5px;
+}
+
+@media (max-width: 820px) {
+  .docs {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 36px;
+  }
+
+  .docs__toc {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-left: 0;
+  }
+
+  .docs__toc-title {
+    width: 100%;
+    margin: 0;
+    padding-left: 0;
+  }
+
+  .docs__toc a {
+    padding: 4px 10px;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background-color: var(--panel);
+  }
+}
+
+/* ------------------------------------------------------------ playground -- */
+
+.pg {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.pg__rail {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 18px;
+  width: 268px;
+  /* Less padding on the scrolling edge, so the thumb sits in the gap rather
+     than over the buttons. */
+  padding: 16px 10px 16px 16px;
+  border-right: 1px solid var(--border);
+  background-color: var(--panel);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.pg__rail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pg__rail-section--grow {
+  flex: 1;
+}
+
+.pg__label {
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pg__rail-section--grow .pg__label {
+  margin-bottom: 4px;
+}
+
+.pg__url-row {
+  display: flex;
+  gap: 6px;
+}
+
+.pg__input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background-color: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 12.5px;
+}
+
+.pg__input:focus {
+  border-color: var(--border-accent);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pg__btn {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background-color: var(--brand-500);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 550;
+}
+
+.pg__btn:hover {
+  background-color: var(--brand-600);
+}
+
+/* What is currently framed, as a chip rather than a stray link — it sits
+   directly under the field that produced it. */
+.pg__loaded {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 5px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background-color: var(--bg);
+}
+
+.pg__loaded-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background-color: #168a55;
+}
+
+.pg__loaded-host {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pg__loaded-clear {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--faint);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.pg__loaded-clear:hover {
+  background-color: #eceef2;
+  color: var(--fg);
+}
+
+.pg__hint {
+  margin: 0;
+  color: var(--faint);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.pg__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pg__group-name {
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Cards rather than a list: a single column of twenty rows is a scroll
+   marathon, and the silhouettes make a device findable without reading. */
+.pg__group-items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.pg__device {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background-color: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.pg__device:hover {
+  border-color: var(--faint);
+  background-color: #fafbfc;
+}
+
+.pg__device--active,
+.pg__device--active:hover {
+  border-color: var(--border-accent);
+  background-color: var(--accent-surface);
+}
+
+.pg__device-name {
+  font-size: 11.5px;
+  font-weight: 550;
+  line-height: 1.2;
+}
+
+.pg__device-size {
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 9.5px;
+}
+
+/* ---- device silhouettes ---- */
+
+.pg__glyph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+}
+
+.pg__glyph-body {
+  border: 1.5px solid var(--faint);
+  border-radius: 3px;
+  background-color: #f3f4f7;
+}
+
+.pg__device--active .pg__glyph-body {
+  border-color: var(--brand-500);
+  background-color: var(--brand-100);
+}
+
+.pg__glyph-body--phone {
+  border-radius: 5px;
+}
+
+.pg__glyph-body--tablet {
+  border-radius: 4px;
+}
+
+.pg__glyph-body--browser {
+  /* The thicker top edge reads as the chrome bar. */
+  border-top-width: 5px;
+  border-radius: 3px;
+}
+
+/* A laptop's base, and a monitor's stand — what separates the two silhouettes
+   at this size, since both are a landscape rectangle. */
+.pg__glyph-base {
+  height: 2px;
+  margin-top: 1.5px;
+  border-radius: 0 0 2px 2px;
+  background-color: var(--faint);
+}
+
+.pg__device--active .pg__glyph-base,
+.pg__device--active .pg__glyph-stand::before,
+.pg__device--active .pg__glyph-stand::after {
+  background-color: var(--brand-500);
+}
+
+.pg__glyph-stand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pg__glyph-stand::before {
+  content: '';
+  width: 2px;
+  height: 4px;
+  background-color: var(--faint);
+}
+
+.pg__glyph-stand::after {
+  content: '';
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background-color: var(--faint);
+}
+
+.pg__code {
+  margin: 0;
+  padding: 12px 13px;
+  border: 1px solid var(--code-line);
+  border-radius: 10px;
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.pg__stage {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  /* Must match the padding passed to `useFitScale`. */
+  padding: 32px;
+  background-color: var(--sunken);
+  background-image: radial-gradient(circle, #e0dcd6 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.pg__frame-host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* Clips the iframe's own scrollbar, which is scrolled past the right edge
+     below. A cross-origin document cannot be styled from here, so hiding its
+     scrollbar the way `.dfs__screen` hides its own is not possible. */
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.pg__iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* `display: block` removes the baseline gap an inline-level iframe leaves
+     beneath it, which otherwise shows as a white strip along the bottom of
+     the device screen. */
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Sits behind the frame, so it shows through when the site refuses to load
+   and is covered when it does. */
+.pg__frame-note {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 40px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.pg__frame-note code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: #eef0f4;
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+@media (max-width: 860px) {
+  .pg {
+    flex-direction: column;
+  }
+
+  .pg__rail {
+    width: auto;
+    max-height: 45vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+/* ----------------------------------------------------------- sample page -- */
+
+/*
+ * Deliberately responsive: the frames exist to show which breakpoint a layout
+ * lands in, which needs a layout that actually has breakpoints.
+ */
+.sp {
+  min-height: 100%;
+  background-color: #ffffff;
+  color: #16181d;
+  font-family: var(--sans);
+}
+
+.sp__bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 28px;
+  border-bottom: 1px solid #ebedf1;
+}
+
+.sp__logo {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sp__nav {
+  display: flex;
+  flex: 1;
+  gap: 18px;
+  color: #62666f;
+  font-size: 14px;
+}
+
+/* Below a tablet there is no room for the links beside the logo. */
+@media (max-width: 700px) {
+  .sp__nav {
+    display: none;
+  }
+}
+
+.sp__cta {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background-color: #16181d;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.sp__hero {
+  padding: 56px 28px 40px;
+  text-align: center;
+}
+
+.sp__hero h1 {
+  margin: 0 auto 14px;
+  max-width: 16ch;
+  font-size: clamp(26px, 4.4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.sp__hero p {
+  margin: 0 auto;
+  max-width: 48ch;
+  color: #62666f;
+}
+
+.sp__hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.sp__btn {
+  padding: 9px 18px;
+  border: 1px solid #e3e5ea;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.sp__btn--primary {
+  border-color: #16181d;
+  background-color: #16181d;
+  color: #ffffff;
+}
+
+.sp__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 20px 28px;
+}
+
+.sp__card {
+  padding: 20px;
+  border: 1px solid #ebedf1;
+  border-radius: 14px;
+}
+
+.sp__card h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.sp__card p {
+  margin: 0;
+  color: #62666f;
+  font-size: 14px;
+}
+
+.sp__split {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 40px 28px;
+}
+
+.sp__split h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.sp__split p {
+  margin: 0 0 12px;
+  color: #62666f;
+  font-size: 14px;
+}
+
+.sp__panel {
+  height: 220px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #dfe4f5 0%, #eef0f4 55%, #e6e2f2 100%);
+}
+
+/* The two breakpoints the mocks are there to demonstrate. */
+@media (max-width: 900px) {
+  .sp__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sp__split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .sp__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sp__hero {
+    padding: 36px 20px 28px;
+  }
+}
+
+.sp__footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 28px 40px;
+  border-top: 1px solid #ebedf1;
+  color: #9297a1;
+  font-size: 13px;
+}
+
+/* The watch is round-ish and small; the TV is a wide panel on feet. */
+.pg__glyph-body--watch {
+  border-radius: 9px;
+}
+
+.pg__glyph-body--tv {
+  border-width: 1.5px 1.5px 2.5px;
+  border-radius: 2px;
+}
