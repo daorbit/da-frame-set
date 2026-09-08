@@ -63,7 +63,7 @@ export function Playground() {
               id="pg-url"
               className="pg__input"
               type="url"
-              placeholder="https://localhost:3000"
+              placeholder="Enter a site URL to frame…"
               value={draftUrl}
               onChange={(event) => setDraftUrl(event.target.value)}
             />
@@ -179,9 +179,12 @@ function FramedSite({ url, isDemo }: { url: string; isDemo: boolean }) {
         className="pg__iframe"
         src={url}
         title="Framed page"
-        sandbox="allow-scripts allow-forms allow-popups"
+        sandbox={
+          isDemo
+            ? 'allow-scripts allow-forms allow-popups allow-same-origin'
+            : 'allow-scripts allow-forms allow-popups'
+        }
         referrerPolicy="no-referrer"
-        loading="lazy"
       />
     </div>
   );

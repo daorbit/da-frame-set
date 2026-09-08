@@ -1,46 +1,53 @@
 import { createRoot } from 'react-dom/client';
+import {
+  BrowserRouter,
+  NavLink,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import { Docs } from './Docs';
 import { Home } from './Home';
 import { Playground } from './Playground';
-import { useRoute, type Route } from './router';
 
 import '../src/styles/frames.css';
 import './site.css';
 
-const NAV: [Route, string][] = [
-  ['home', 'Home'],
-  ['docs', 'Docs'],
-  ['playground', 'Playground'],
+const NAV: [string, string][] = [
+  ['/', 'Home'],
+  ['/docs', 'Docs'],
+  ['/playground', 'Playground'],
 ];
 
 function App() {
-  const [route, navigate] = useRoute();
+  const { pathname } = useLocation();
+  const onPlayground = pathname === '/playground';
 
   return (
-    // The playground fills the viewport and manages its own scrolling; the
-    // other routes are ordinary documents that scroll with the page.
-    <div className={`app${route === 'playground' ? ' app--fixed' : ''}`}>
+    <div className={`app${onPlayground ? ' app--fixed' : ''}`}>
       <header className="topbar">
-        <button className="topbar__brand" type="button" onClick={() => navigate('home')}>
-          <img className="topbar__mark" src="/frameset-logo-square.png" alt="da-frame-set" />
-        </button>
+        <NavLink to="/" className="topbar__brand">
+          <img className="topbar__mark" src="/frameset-logo.svg" alt="da-frame-set" />
+        </NavLink>
 
         <nav className="topbar__nav" aria-label="Main">
-          {NAV.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className={`topbar__link${route === id ? ' topbar__link--active' : ''}`}
-              aria-current={route === id ? 'page' : undefined}
-              onClick={() => navigate(id)}
+          {NAV.map(([to, label]) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) =>
+                `topbar__link${isActive ? ' topbar__link--active' : ''}`
+              }
             >
               {label}
-            </button>
+            </NavLink>
           ))}
         </nav>
 
         <div className="topbar__end">
-          <span className="topbar__version">v0.1.0</span>
+          <span className="topbar__version">v0.1.2</span>
           <a
             className="topbar__npm"
             href="https://www.npmjs.com/package/da-frame-set"
@@ -53,12 +60,19 @@ function App() {
       </header>
 
       <main className="app__main">
-        {route === 'home' && <Home navigate={navigate} />}
-        {route === 'docs' && <Docs />}
-        {route === 'playground' && <Playground />}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/docs" element={<Docs />} />
+          <Route path="/playground" element={<Playground />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
     </div>
   );
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+);

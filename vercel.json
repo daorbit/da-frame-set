@@ -2,6 +2,9 @@
   "buildCommand": "npm run build:site",
   "outputDirectory": "dist-site",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!assets/|demo-site\\.html|favicon\\.svg|favicon\\.png|favicon-32\\.png|frameset-logo\\.svg|frameset-logo-square\\.svg|frameset-logo\\.png|frameset-logo-square\\.png).*)",
+      "destination": "/index.html"
+    }
   ]
 }

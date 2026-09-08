@@ -162,6 +162,7 @@ body {
   background: none;
   color: var(--fg);
   cursor: pointer;
+  text-decoration: none;
   font: inherit;
   font-size: 15.5px;
   font-weight: 650;
@@ -171,9 +172,8 @@ body {
 /* A miniature of the thing the package draws. */
 .topbar__mark {
   display: block;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
 }
 
@@ -192,6 +192,7 @@ body {
   cursor: pointer;
   font: inherit;
   font-size: 14px;
+  text-decoration: none;
   transition: color 130ms ease, background-color 130ms ease;
 }
 
@@ -1197,10 +1198,14 @@ body {
   background-size: 22px 22px;
 }
 
-.pg__frame-host {
-  position: relative;
-  width: 100%;
+.dfs__viewport:has(> .pg__frame-host) {
   height: 100%;
+  overflow: hidden;
+}
+
+.pg__frame-host {
+  position: absolute;
+  inset: 0;
   /* Clips the iframe's own scrollbar, which is scrolled past the right edge
      below. A cross-origin document cannot be styled from here, so hiding its
      scrollbar the way `.dfs__screen` hides its own is not possible. */
@@ -1216,7 +1221,10 @@ body {
      beneath it, which otherwise shows as a white strip along the bottom of
      the device screen. */
   display: block;
-  width: 100%;
+  /* Overshoots the right edge so a cross-origin document's own scrollbar —
+     which cannot be styled from here — sits in the strip `.pg__frame-host`
+     clips off, rather than down the device's screen edge. */
+  width: calc(100% + 20px);
   height: 100%;
   border: 0;
 }

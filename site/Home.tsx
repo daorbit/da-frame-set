@@ -10,9 +10,9 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { DEVICE_IDS, DeviceFrame, frameSize, getDevice, type DeviceId } from '../src';
 import { DEMO_URL } from './demoSite';
-import type { Route } from './router';
 
 /** The hero mock cycles through these, so the frames sell themselves. */
 const SHOWCASE: DeviceId[] = ['macbook-pro-16', 'ipad-air', 'iphone-pro', 'browser'];
@@ -40,7 +40,8 @@ const FEATURES: [LucideIcon, string, string][] = [
   ],
 ];
 
-export function Home({ navigate }: { navigate: (route: Route) => void }) {
+export function Home() {
+  const navigate = useNavigate();
   const [shown, setShown] = useState<DeviceId>('macbook-pro-16');
   const spec = getDevice(shown);
   const size = frameSize(spec);
@@ -72,12 +73,12 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
             <button
               className="btn btn--primary"
               type="button"
-              onClick={() => navigate('playground')}
+              onClick={() => navigate('/playground')}
             >
               <Play size={15} strokeWidth={2.5} fill="currentColor" />
               Open the playground
             </button>
-            <button className="btn btn--ghost" type="button" onClick={() => navigate('docs')}>
+            <button className="btn btn--ghost" type="button" onClick={() => navigate('/docs')}>
               <BookText size={15} strokeWidth={2} />
               Documentation
             </button>
@@ -148,7 +149,7 @@ export function Home({ navigate }: { navigate: (route: Route) => void }) {
             site. Pair it with <code>useFitScale</code> and the frame sizes itself to whatever
             room it has.
           </p>
-          <button className="btn btn--ghost" type="button" onClick={() => navigate('docs')}>
+          <button className="btn btn--ghost" type="button" onClick={() => navigate('/docs')}>
             Read the docs
           </button>
         </div>

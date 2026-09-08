@@ -2,806 +2,437 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pulsegrid — Analytics that answers before you ask.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Da Frame Set — Build the habit, keep the streak</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
   :root{
-    --bg: #FFFFFF;
-    --surface: #FFFFFF;
-    --surface-2: #FFF4EC;
-    --line: #F0E4DA;
-    --ink: #201A16;
-    --ink-dim: #746759;
-    --ink-faint: #A69A8C;
-    --accent: #F1662A;
-    --accent-ink: #FFFFFF;
-    --accent-soft: #FFEDE0;
-    --coral: #F1662A;
-    --mint: #E2812E;
-    --radius: 18px;
-    --wrap: 1180px;
-    --shadow: 0 20px 45px -24px rgba(32,26,22,0.14);
+    --orange: #FF7A29;
+    --orange-dark: #E8611A;
+    --orange-light: #FFF1E6;
+    --ink: #1B1B1B;
+    --ink-soft: #5B5B5B;
+    --white: #FFFFFF;
+    --line: #EFE6DC;
+    --radius: 14px;
+    --maxw: 1160px;
   }
-
   *{box-sizing:border-box;}
-
-  /* Thin scrollbars, matching the app's. A default Windows scrollbar drawn
-     down the edge of a device mock reads as chrome rather than as part of the
-     page being previewed. */
-  *{
-    scrollbar-width:thin;
-    scrollbar-color:rgba(255,255,255,0.18) transparent;
-  }
-  ::-webkit-scrollbar{ width:8px; height:8px; }
-  ::-webkit-scrollbar-track,
-  ::-webkit-scrollbar-corner{ background:transparent; }
-  ::-webkit-scrollbar-thumb{
-    /* A transparent border clipped to the padding box leaves the thumb
-       visually thinner than the track it needs for a comfortable hit area. */
-    border:2px solid transparent;
-    border-radius:8px;
-    background-clip:padding-box;
-    background-color:rgba(255,255,255,0.18);
-  }
-  ::-webkit-scrollbar-thumb:hover{ background-color:rgba(255,255,255,0.3); }
   html{scroll-behavior:smooth;}
   body{
     margin:0;
-    background:var(--bg);
+    font-family:'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     color:var(--ink);
-    font-family:'Inter', system-ui, sans-serif;
-    font-size:16px;
-    line-height:1.6;
+    background:var(--white);
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{
-    font-family:'Manrope', 'Inter', sans-serif;
-    font-weight:700;
-    line-height:1.14;
-    margin:0;
-    letter-spacing:-0.01em;
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
   }
-  p{margin:0;}
-  a{color:inherit; text-decoration:none;}
+  h1,h2,h3{margin:0; font-weight:700; line-height:1.15;}
+  p{margin:0; color:var(--ink-soft); line-height:1.6;}
+  a{text-decoration:none; color:inherit;}
   img{max-width:100%; display:block;}
-  .mono{font-family:'IBM Plex Mono', monospace;}
-
-  .wrap{
-    max-width:var(--wrap);
-    margin:0 auto;
-    padding:0 28px;
-  }
-
-  header.site{
-    position:sticky; top:0; z-index:50;
-    background:rgba(251,251,253,0.78);
-    backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--line);
-  }
-  nav.wrap{
-    display:flex; align-items:center; justify-content:space-between;
-    height:72px;
-  }
-  .brand{
-    display:flex; align-items:center; gap:9px;
-    font-family:'Manrope'; font-weight:800; font-size:1.12rem;
-  }
-  .brand .dot{
-    width:22px; height:22px; border-radius:8px;
-    background:linear-gradient(135deg, var(--accent), var(--mint));
-  }
-  .nav-links{
-    display:flex; align-items:center; gap:32px;
-    font-size:0.93rem; color:var(--ink-dim); font-weight:500;
-  }
-  .nav-links a:hover{color:var(--ink);}
-  .nav-cta{
-    display:flex; align-items:center; gap:16px;
-  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  section{padding:96px 0;}
+  .eyebrow{color:var(--orange-dark); font-weight:600; font-size:0.95rem; margin-bottom:10px;}
   .btn{
     display:inline-flex; align-items:center; justify-content:center;
-    padding:11px 22px;
-    border-radius:11px;
-    font-size:0.92rem; font-weight:600;
-    border:1px solid transparent;
-    cursor:pointer;
-    white-space:nowrap;
-    transition:transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    padding:10px 20px; border-radius:8px; font-weight:600; font-size:.9rem;
+    cursor:pointer; border:1.5px solid transparent; transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
   }
-  .btn-primary{
-    background:var(--ink); color:#fff;
-  }
-  .btn-primary:hover{ background:var(--accent); box-shadow:0 12px 24px -10px rgba(91,78,245,0.55); }
-  .btn-ghost{
-    color:var(--ink-dim); border-color:var(--line); background:var(--surface);
-  }
-  .btn-ghost:hover{ color:var(--ink); border-color:#CFCBEA; }
-  .menu-btn{
-    display:none;
-    background:var(--surface); border:1px solid var(--line); border-radius:9px;
-    width:42px; height:42px; color:var(--ink);
-    font-size:1.1rem; cursor:pointer;
-  }
+  .btn-primary{background:var(--orange); color:var(--white); box-shadow:0 4px 10px rgba(255,122,41,.25);}
+  .btn-primary:hover{background:var(--orange-dark); transform:translateY(-1px); box-shadow:0 6px 14px rgba(255,122,41,.3);}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--orange); color:var(--orange-dark);}
+  .nav-cta .btn{padding:9px 18px; font-size:.85rem;}
+  :focus-visible{outline:3px solid var(--orange-dark); outline-offset:3px;}
 
-  .hero{
-    padding:84px 0 46px;
+  /* NAV */
+  header{
+    position:sticky; top:0; z-index:50; background:rgba(255,255,255,.9);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+  }
+  nav{display:flex; align-items:center; justify-content:space-between; padding:18px 24px; max-width:var(--maxw); margin:0 auto;}
+  .logo{display:flex; align-items:center; font-weight:700; font-size:1.15rem; letter-spacing:-0.01em;}
+  .nav-links{display:flex; gap:32px; font-weight:500;}
+  .nav-links a{color:var(--ink-soft); transition:color .15s ease;}
+  .nav-links a:hover{color:var(--orange-dark);}
+  .nav-cta{display:flex; align-items:center; gap:16px;}
+  .burger{display:none; width:26px; height:20px; position:relative; cursor:pointer; background:none; border:none; padding:0;}
+  .burger span{position:absolute; left:0; width:100%; height:2px; background:var(--ink); border-radius:2px; transition:.25s ease;}
+  .burger span:nth-child(1){top:0;} .burger span:nth-child(2){top:9px;} .burger span:nth-child(3){top:18px;}
+  .burger.open span:nth-child(1){transform:translateY(9px) rotate(45deg);}
+  .burger.open span:nth-child(2){opacity:0;}
+  .burger.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg);}
+
+  /* HERO */
+  .hero{padding:88px 0 60px; overflow:hidden; position:relative;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
+  .hero h1{font-size:clamp(2.2rem, 4.6vw, 3.6rem); letter-spacing:-0.01em;}
+  .hero h1 .accent{color:var(--orange);}
+  .hero p.lead{margin-top:20px; font-size:1.15rem; max-width:46ch;}
+  .hero-cta{display:flex; gap:14px; margin-top:28px; flex-wrap:wrap;}
+  .hero-cta .btn{padding:11px 24px; font-size:.95rem;}
+  .hero-proof{display:flex; align-items:center; gap:14px; margin-top:36px; color:var(--ink-soft); font-size:.92rem;}
+  .avatars{display:flex;}
+  .avatars span{width:32px; height:32px; border-radius:50%; border:2px solid var(--white); margin-left:-10px; background:linear-gradient(135deg, var(--orange-light), var(--orange));}
+  .avatars span:first-child{margin-left:0;}
+
+  .hero-visual{position:relative; display:flex; align-items:center; justify-content:center;}
+  .orb{
+    width:320px; height:320px; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #FFB27A, var(--orange) 55%, var(--orange-dark) 100%);
+    box-shadow:0 30px 70px rgba(255,122,41,.35);
+    animation:float 6s ease-in-out infinite;
     position:relative;
-    overflow:hidden;
   }
-  .hero::before{
-    content:"";
-    position:absolute; top:-260px; right:-220px;
-    width:640px; height:640px;
-    background:radial-gradient(circle, rgba(91,78,245,0.14), transparent 65%);
-    pointer-events:none;
+  .orb::after{
+    content:""; position:absolute; inset:14px; border-radius:50%;
+    border:2px dashed rgba(255,255,255,.5); animation:spin 18s linear infinite;
   }
-  .hero::after{
-    content:"";
-    position:absolute; bottom:-160px; left:-180px;
-    width:420px; height:420px;
-    background:radial-gradient(circle, rgba(22,199,154,0.12), transparent 65%);
-    pointer-events:none;
+  .streak-card{
+    position:absolute; bottom:-18px; left:-30px; background:var(--white); border:1px solid var(--line);
+    border-radius:var(--radius); padding:16px 20px; box-shadow:0 20px 40px rgba(0,0,0,.08);
+    animation:float 6s ease-in-out infinite; animation-delay:.4s;
   }
-  .hero-grid{
-    display:grid;
-    grid-template-columns:1.05fr 0.95fr;
-    gap:56px;
-    align-items:center;
-    position:relative;
-  }
-  .kicker{
-    display:inline-flex; align-items:center; gap:8px;
-    font-size:0.82rem; color:var(--ink-dim); font-weight:500;
-    background:var(--surface);
-    border:1px solid var(--line);
-    padding:6px 14px 6px 8px;
-    border-radius:99px;
-    margin-bottom:24px;
-    box-shadow:var(--shadow);
-  }
-  .kicker span.tag{
-    background:var(--accent); color:#fff;
-    font-size:0.68rem; font-weight:700;
-    padding:2px 8px; border-radius:99px;
-  }
-  .hero h1{
-    font-size:clamp(1.7rem, 2.7vw, 2.4rem);
-    max-width:18ch;
-    color:var(--ink);
-  }
-  .hero .lede{
-    margin-top:16px;
-    font-size:0.97rem;
-    color:var(--ink-dim);
-    max-width:46ch;
-  }
-  .hero-actions{
-    display:flex; align-items:center; gap:16px;
-    margin-top:32px;
-  }
-  .hero-actions .btn{ padding:14px 26px; font-size:0.98rem; }
-  .no-card{ font-size:0.85rem; color:var(--ink-faint); margin-top:14px; }
+  .streak-card strong{display:block; font-size:1.4rem; color:var(--orange-dark);}
+  .streak-card span{font-size:.8rem; color:var(--ink-soft);}
+  @keyframes float{0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);}}
+  @keyframes spin{from{transform:rotate(0);} to{transform:rotate(360deg);}}
 
-  .fact-row{
-    display:flex; flex-wrap:wrap;
-    gap:10px;
-    margin-top:36px;
-  }
-  .fact{
-    display:flex; align-items:baseline; gap:7px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    padding:9px 14px;
-    border-radius:11px;
-    font-size:0.85rem;
-    color:var(--ink-dim);
-  }
-  .fact b{ font-family:'IBM Plex Mono'; color:var(--accent); font-weight:500; }
+  /* LOGO STRIP */
+  .logos{padding:36px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .logos .wrap{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px; opacity:.6; font-weight:700; letter-spacing:.02em;}
 
-  .panel{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
+  /* FEATURES */
+  .section-head{max-width:640px; margin-bottom:52px;}
+  .section-head h2{font-size:clamp(1.7rem, 3vw, 2.4rem);}
+  .section-head p{margin-top:14px; font-size:1.05rem;}
+  .feature-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;}
+  .feature-card{
+    padding:30px; border-radius:var(--radius); border:1px solid var(--line); background:var(--white);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; opacity:0; transform:translateY(24px);
   }
-  .dash{ padding:0; overflow:hidden; transform:rotate(0.4deg); }
-  .dash-top{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 20px;
-    border-bottom:1px solid var(--line);
+  .feature-card.in-view{animation:rise .6s ease forwards;}
+  .feature-card:hover{transform:translateY(-6px); box-shadow:0 18px 34px rgba(0,0,0,.07); border-color:var(--orange);}
+  .feature-icon{
+    width:46px; height:46px; border-radius:12px; background:var(--orange-light); color:var(--orange-dark);
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:18px;
   }
-  .dash-top .who{ font-size:0.82rem; color:var(--ink-dim); }
-  .dash-top .live{
-    display:flex; align-items:center; gap:6px;
-    font-size:0.78rem; color:var(--mint); font-weight:600;
-  }
-  .live .blip{
-    width:7px; height:7px; border-radius:50%; background:var(--mint);
-    box-shadow:0 0 0 3px rgba(22,199,154,0.2);
-    animation:pulse 1.8s infinite;
-  }
-  @keyframes pulse{
-    0%,100%{ opacity:1; } 50%{ opacity:0.35; }
-  }
-  .dash-stats{
-    display:grid; grid-template-columns:repeat(3,1fr);
-    border-bottom:1px solid var(--line);
-  }
-  .dstat{
-    padding:18px 20px;
-    border-right:1px solid var(--line);
-  }
-  .dstat:last-child{ border-right:none; }
-  .dstat .label{ font-size:0.74rem; color:var(--ink-faint); }
-  .dstat .value{
-    font-family:'IBM Plex Mono'; font-size:1.3rem; margin-top:5px; color:var(--ink); font-weight:500;
-  }
-  .dstat .delta{ font-size:0.74rem; color:var(--mint); margin-top:3px; font-weight:600; }
-  .dstat .delta.down{ color:var(--coral); }
+  .feature-card h3{font-size:1.15rem; margin-bottom:8px;}
 
-  .dash-chart{
-    padding:20px 20px 6px;
-  }
-  .bars{
-    display:flex; align-items:flex-end; gap:5px; height:90px;
-  }
-  .bars i{
-    flex:1;
-    background:linear-gradient(180deg, var(--accent), rgba(241,102,42,0.18));
-    border-radius:4px 4px 0 0;
-  }
-  .dash-rows{
-    padding:8px 20px 20px;
-    display:grid; gap:10px;
-  }
-  .row{
-    display:flex; align-items:center; justify-content:space-between;
-    font-size:0.83rem;
-  }
-  .row .name{ color:var(--ink-dim); }
-  .row .num{ font-family:'IBM Plex Mono'; color:var(--ink); }
-  .row .bar{
-    flex:1; height:5px; margin:0 12px;
-    background:var(--surface-2); border-radius:3px; overflow:hidden;
-  }
-  .row .bar span{
-    display:block; height:100%; background:var(--coral); border-radius:3px;
-  }
+  @keyframes rise{to{opacity:1; transform:translateY(0);}}
 
-  section{ padding:92px 0; }
-  section.divider{ border-top:1px solid var(--line); }
-  .section-head{
-    max-width:640px;
-    margin-bottom:50px;
+  /* HOW IT WORKS */
+  .how{background:var(--orange-light);}
+  .steps{display:grid; grid-template-columns:repeat(4, 1fr); gap:20px; counter-reset:step;}
+  .step{position:relative; padding:28px 24px; background:var(--white); border-radius:var(--radius); border:1px solid var(--line);}
+  .step-num{
+    width:36px; height:36px; border-radius:50%; background:var(--orange); color:var(--white);
+    display:flex; align-items:center; justify-content:center; font-weight:700; margin-bottom:16px;
   }
-  .section-head h2{
-    font-size:clamp(1.35rem, 1.9vw, 1.7rem);
-  }
-  .section-head p{
-    margin-top:12px;
-    color:var(--ink-dim);
-    font-size:0.94rem;
-  }
+  .step h3{font-size:1.05rem; margin-bottom:6px;}
 
-  .stack-strip{
-    display:flex; flex-wrap:wrap; gap:14px 32px;
-    padding:24px 0;
-    color:var(--ink-faint);
-    font-size:0.85rem; font-weight:500;
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-  }
+  /* STATS */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center;}
+  .stat strong{display:block; font-size:2.6rem; color:var(--orange-dark);}
+  .stat span{color:var(--ink-soft); font-size:.95rem;}
 
-  /* stat band */
-  .stat-band{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
-    border-radius:16px;
-    overflow:hidden;
+  /* TESTIMONIALS */
+  .testimonials{background:var(--ink); border-radius:24px; margin:0 24px; padding:72px 0;}
+  .testimonials .wrap{padding:0 24px;}
+  .testimonials .section-head h2, .testimonials .section-head p{color:var(--white);}
+  .testimonials .section-head p{color:#c9c9c9;}
+  .t-track{display:flex; gap:22px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:10px;}
+  .t-track::-webkit-scrollbar{height:6px;}
+  .t-track::-webkit-scrollbar-thumb{background:var(--orange); border-radius:6px;}
+  .t-card{
+    scroll-snap-align:start; min-width:320px; max-width:340px; background:#242424; border-radius:var(--radius);
+    padding:28px; color:var(--white); border:1px solid #333;
   }
-  .stat-cell{
-    background:var(--surface);
-    padding:26px 22px;
-    text-align:left;
-  }
-  .stat-cell .big{
-    font-family:'Manrope'; font-weight:800; font-size:1.7rem; color:var(--accent);
-  }
-  .stat-cell .lab{
-    margin-top:6px; font-size:0.85rem; color:var(--ink-dim);
-  }
+  .stars{color:var(--orange); letter-spacing:2px; margin-bottom:14px;}
+  .t-card p{color:#dcdcdc; font-size:.98rem;}
+  .t-person{display:flex; align-items:center; gap:12px; margin-top:20px;}
+  .t-avatar{width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, var(--orange-light), var(--orange));}
+  .t-person strong{display:block; color:var(--white); font-size:.92rem;}
+  .t-person span{color:#9a9a9a; font-size:.82rem;}
 
-  /* use cases */
-  .use-grid{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:18px;
+  /* PRICING */
+  .pricing-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; align-items:stretch;}
+  .price-card{border:1px solid var(--line); border-radius:var(--radius); padding:34px 28px; display:flex; flex-direction:column;}
+  .price-card.featured{border-color:var(--orange); box-shadow:0 20px 40px rgba(255,122,41,.18); position:relative;}
+  .badge{
+    position:absolute; top:-14px; left:28px; background:var(--orange); color:var(--white);
+    font-size:.78rem; font-weight:700; padding:6px 14px; border-radius:999px;
   }
-  .use-card{
-    border:1px solid var(--line); border-radius:16px;
-    padding:22px 20px; background:var(--surface-2);
-  }
-  .use-card .icon{
-    width:34px; height:34px; border-radius:9px;
-    background:var(--accent); color:#fff;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Manrope'; font-weight:700; font-size:0.9rem;
-    margin-bottom:14px;
-  }
-  .use-card h3{ font-size:0.96rem; }
-  .use-card p{ margin-top:7px; color:var(--ink-dim); font-size:0.85rem; }
+  .price{font-size:2.4rem; font-weight:800; margin:18px 0 6px;}
+  .price span{font-size:1rem; font-weight:500; color:var(--ink-soft);}
+  .price-list{list-style:none; padding:0; margin:22px 0; display:flex; flex-direction:column; gap:12px; flex:1;}
+  .price-list li{padding-left:26px; position:relative; color:var(--ink-soft); font-size:.95rem;}
+  .price-list li::before{content:"✓"; position:absolute; left:0; color:var(--orange-dark); font-weight:700;}
 
-  .feat-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:18px;
+  /* FAQ */
+  .faq-list{max-width:760px; margin:0 auto;}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; padding:22px 0; font-size:1.05rem; font-weight:600;
+    display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--ink);
   }
-  .feat{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:26px 24px;
-  }
-  .feat .stat{
-    display:inline-block;
-    font-family:'IBM Plex Mono'; color:var(--accent);
-    font-size:0.82rem; margin-bottom:16px;
-    background:var(--accent-soft);
-    padding:4px 10px; border-radius:99px;
-  }
-  .feat h3{ font-size:0.98rem; }
-  .feat p{ margin-top:8px; color:var(--ink-dim); font-size:0.87rem; }
+  .faq-q .plus{transition:transform .25s ease; color:var(--orange-dark); font-size:1.3rem;}
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .faq-a p{padding-bottom:20px; max-width:64ch;}
 
-  .compare{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:44px;
-    align-items:center;
+  /* CTA BANNER */
+  .cta-banner{
+    background:linear-gradient(120deg, var(--orange), var(--orange-dark));
+    border-radius:24px; margin:0 24px; padding:64px 40px; text-align:center; color:var(--white);
   }
-  .compare-visual{
-    display:grid; gap:14px;
-  }
-  .cbar-row{ display:grid; grid-template-columns:120px 1fr 46px; align-items:center; gap:12px; }
-  .cbar-row .lab{ font-size:0.85rem; color:var(--ink-dim); font-weight:500; }
-  .cbar-track{ background:var(--surface-2); border-radius:7px; height:15px; overflow:hidden; }
-  .cbar-fill{ height:100%; border-radius:7px; }
-  .cbar-row .pct{ font-family:'IBM Plex Mono'; font-size:0.85rem; text-align:right; }
+  .cta-banner h2{font-size:clamp(1.7rem,3.4vw,2.4rem); color:var(--white);}
+  .cta-banner p{color:#ffe6d6; margin-top:12px; max-width:50ch; margin-left:auto; margin-right:auto;}
+  .cta-banner .hero-cta{justify-content:center;}
+  .cta-banner .btn-ghost{border-color:rgba(255,255,255,.6); color:var(--white);}
+  .cta-banner .btn-ghost:hover{border-color:var(--white);}
+  .cta-banner .btn-primary{background:var(--white); color:var(--orange-dark); box-shadow:none;}
+  .cta-banner .btn-primary:hover{background:#fff0e6;}
 
-  .steps{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
-  }
-  .step{
-    border:1px solid var(--line); border-radius:16px;
-    padding:28px 24px; background:var(--surface);
-  }
-  .step .idx{
-    font-family:'IBM Plex Mono'; color:var(--accent); font-size:0.85rem; font-weight:500;
-  }
-  .step h3{ margin-top:12px; font-size:0.97rem; }
-  .step p{ margin-top:8px; color:var(--ink-dim); font-size:0.87rem; }
-  .code-block{
-    margin-top:46px;
-    background:var(--ink);
-    border-radius:16px;
-    padding:20px 24px;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:20px;
-    overflow-x:auto;
-  }
-  .code-block code{
-    font-family:'IBM Plex Mono'; font-size:0.88rem; color:#B9FCE4; white-space:pre;
-  }
-  .copy-tag{
-    font-size:0.78rem; color:#B7B4C9; border:1px solid #3A3750;
-    padding:6px 12px; border-radius:8px; white-space:nowrap;
-  }
+  /* FOOTER */
+  footer{padding:64px 0 32px; border-top:1px solid var(--line); margin-top:40px;}
+  .footer-grid{display:grid; grid-template-columns:1.4fr repeat(3, 1fr); gap:32px;}
+  .footer-col h4{font-size:.92rem; margin-bottom:14px; color:var(--ink);}
+  .footer-col a{display:block; color:var(--ink-soft); font-size:.92rem; padding:6px 0; transition:color .15s ease;}
+  .footer-col a:hover{color:var(--orange-dark);}
+  .footer-bottom{display:flex; justify-content:space-between; align-items:center; margin-top:48px; padding-top:24px; border-top:1px solid var(--line); color:var(--ink-soft); font-size:.85rem; flex-wrap:wrap; gap:12px;}
+  .socials{display:flex; gap:14px;}
+  .socials a{width:34px; height:34px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; transition:.2s ease;}
+  .socials a:hover{background:var(--orange); border-color:var(--orange); color:var(--white);}
 
-  .price-grid{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
-  }
-  .price{
-    border:1px solid var(--line); border-radius:18px;
-    padding:30px 26px;
-    background:var(--surface);
-    display:flex; flex-direction:column;
-  }
-  .price.featured{
-    border-color:var(--accent);
-    background:linear-gradient(180deg, var(--accent-soft), var(--surface) 55%);
-    box-shadow:var(--shadow);
-  }
-  .price .plan-name{ font-size:0.95rem; color:var(--ink-dim); font-weight:600; }
-  .price .plan-price{
-    font-family:'Manrope'; font-size:1.8rem; margin-top:8px; font-weight:800;
-  }
-  .price .plan-price span{ font-size:0.9rem; color:var(--ink-faint); font-weight:500; }
-  .price ul{ list-style:none; padding:0; margin:24px 0 28px; display:grid; gap:11px; }
-  .price li{
-    font-size:0.9rem; color:var(--ink-dim);
-    padding-left:22px; position:relative;
-  }
-  .price li::before{
-    content:"✓"; position:absolute; left:0; color:var(--mint); font-weight:700;
-  }
-  .price .btn{ margin-top:auto; }
+  /* reveal-on-scroll generic */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
 
-  .testi{
-    max-width:760px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:40px 40px;
-    box-shadow:var(--shadow);
-  }
-  .testi p.quote{
-    font-family:'Manrope'; font-weight:600;
-    font-size:1.08rem; line-height:1.55; color:var(--ink);
-  }
-  .testi .who{
-    margin-top:22px; display:flex; align-items:center; gap:12px;
-    font-size:0.88rem; color:var(--ink-dim);
-  }
-  .avatar{
-    width:40px; height:40px; border-radius:11px;
-    background:linear-gradient(135deg, var(--accent), var(--mint));
-  }
-
-  .faq{ max-width:760px; display:grid; gap:12px; }
-  details{
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:14px; padding:19px 22px;
-  }
-  details summary{
-    cursor:pointer; font-weight:600; font-size:0.98rem;
-    list-style:none; display:flex; justify-content:space-between; align-items:center;
-  }
-  details summary::-webkit-details-marker{ display:none; }
-  details summary::after{
-    content:"+"; color:var(--ink-faint); font-size:1.3rem; font-weight:400;
-  }
-  details[open] summary::after{ content:"–"; color:var(--accent); }
-  details p{ margin-top:13px; color:var(--ink-dim); font-size:0.92rem; }
-
-  .final-cta{
-    text-align:center;
-    padding:100px 0;
-    background:var(--surface-2);
-    border-radius:28px;
-    margin:0 20px;
-  }
-  .final-cta h2{
-    font-size:clamp(1.5rem, 2.6vw, 2.05rem);
-    max-width:20ch; margin:0 auto;
-  }
-  .final-cta .hero-actions{ justify-content:center; margin-top:32px; }
-
-  footer{ border-top:1px solid var(--line); padding:60px 0 34px; margin-top:20px; }
-  .foot-grid{
-    display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:30px;
-  }
-  .foot-brand p{ color:var(--ink-dim); font-size:0.9rem; margin-top:14px; max-width:32ch; }
-  .foot-col h4{ font-size:0.85rem; color:var(--ink); margin-bottom:14px; }
-  .foot-col a{ display:block; color:var(--ink-dim); font-size:0.88rem; margin-bottom:10px; }
-  .foot-col a:hover{ color:var(--ink); }
-  .foot-bottom{
-    margin-top:50px; padding-top:24px; border-top:1px solid var(--line);
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
-    font-size:0.8rem; color:var(--ink-faint);
-  }
-
+  /* ---------- RESPONSIVE ---------- */
   @media (max-width: 980px){
-    .hero-grid{ grid-template-columns:1fr; gap:44px; }
-    .feat-grid{ grid-template-columns:1fr 1fr; }
-    .compare{ grid-template-columns:1fr; }
-    .steps{ grid-template-columns:1fr; }
-    .price-grid{ grid-template-columns:1fr; max-width:420px; }
-    .foot-grid{ grid-template-columns:1fr 1fr; }
-    .dash{ transform:none; }
-    .stat-band{ grid-template-columns:1fr 1fr; }
-    .use-grid{ grid-template-columns:1fr 1fr; }
+    .hero-grid{grid-template-columns:1fr; text-align:center;}
+    .hero-proof{justify-content:center;}
+    .hero-cta{justify-content:center;}
+    .feature-grid{grid-template-columns:repeat(2,1fr);}
+    .steps{grid-template-columns:repeat(2,1fr);}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .pricing-grid{grid-template-columns:1fr; max-width:420px; margin:0 auto;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width: 760px){
+    .nav-links{
+      position:fixed; top:66px; left:0; right:0; background:var(--white); flex-direction:column;
+      padding:20px 24px; gap:6px; border-bottom:1px solid var(--line); transform:translateY(-130%);
+      transition:transform .3s ease; box-shadow:0 12px 20px rgba(0,0,0,.06);
+    }
+    .nav-links.open{transform:translateY(0);}
+    .nav-links a{padding:12px 0; border-bottom:1px solid var(--line); width:100%;}
+    .burger{display:block;}
+    .nav-cta .btn-ghost{display:none;}
+    section{padding:64px 0;}
+    .feature-grid{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr;}
+    .stats{grid-template-columns:1fr 1fr; gap:16px;}
+    .testimonials, .cta-banner{margin:0 14px; border-radius:18px; padding:48px 20px;}
+    .streak-card{left:0; right:0; margin:0 auto; bottom:-30px;}
+    .footer-grid{grid-template-columns:1fr;}
+    .footer-bottom{flex-direction:column; align-items:flex-start;}
+  }
+  @media (max-width: 420px){
+    .wrap{padding:0 16px;}
+    .hero{padding:64px 0 40px;}
+    .orb{width:220px; height:220px;}
+    .btn{padding:12px 20px; font-size:.92rem;}
+    .stats{grid-template-columns:1fr 1fr;}
+    .stat strong{font-size:2rem;}
+    .t-card{min-width:82vw;}
   }
 
-  @media (max-width: 720px){
-    .nav-links{ display:none; }
-    .menu-btn{ display:block; }
-    .nav-cta .btn-ghost{ display:none; }
-    .hero{ padding:52px 0 30px; }
-    .feat-grid{ grid-template-columns:1fr; }
-    .dash-stats{ grid-template-columns:1fr 1fr; }
-    .dstat:nth-child(2){ border-right:none; }
-    .foot-grid{ grid-template-columns:1fr 1fr; }
-    section{ padding:56px 0; }
-    .code-block{ flex-direction:column; align-items:flex-start; }
-    .testi{ padding:30px 26px; }
-    .final-cta{ margin:0 12px; padding:60px 0; }
-    .stat-band{ grid-template-columns:1fr 1fr; }
-    .use-grid{ grid-template-columns:1fr; }
-  }
-
-  @media (max-width: 460px){
-    .wrap{ padding:0 18px; }
-    .hero-actions{ flex-direction:column; align-items:stretch; }
-    .fact-row{ gap:8px; }
-    .foot-grid{ grid-template-columns:1fr; }
+  /* Small-screen / smartwatch-class devices */
+  @media (max-width: 260px), (max-height: 320px) and (max-width: 320px){
+    body{font-size:13px;}
+    .wrap{padding:0 10px;}
+    nav{padding:10px 12px;}
+    .logo{font-size:1rem;}
+    .nav-cta .btn-primary{padding:8px 14px; font-size:.78rem;}
+    section{padding:34px 0;}
+    .hero{padding:30px 0 20px;}
+    .hero h1{font-size:1.3rem;}
+    .hero p.lead{font-size:.85rem;}
+    .hero-cta{flex-direction:column; gap:10px;}
+    .btn{width:100%; padding:9px 14px; font-size:.8rem;}
+    .hero-cta .btn{padding:9px 14px; font-size:.8rem;}
+    .orb{width:120px; height:120px;}
+    .streak-card{padding:10px 12px; bottom:-14px;}
+    .streak-card strong{font-size:1rem;}
+    .section-head h2{font-size:1.1rem;}
+    .section-head p{font-size:.82rem;}
+    .feature-card{padding:16px;}
+    .stats{grid-template-columns:1fr 1fr; gap:8px;}
+    .stat strong{font-size:1.2rem;}
+    .testimonials, .cta-banner{margin:0 6px; padding:24px 12px; border-radius:12px;}
+    .t-card{min-width:90vw; padding:16px;}
+    .price-card{padding:18px;}
+    .footer-grid{grid-template-columns:1fr;}
   }
 </style>
 </head>
 <body>
 
-<header class="site">
-  <nav class="wrap">
-    <a href="#" class="brand"><span class="dot"></span>Pulsegrid</a>
-    <div class="nav-links">
-      <a href="#features">Product</a>
-      <a href="#compare">Why Pulsegrid</a>
+<header>
+  <nav>
+    <a href="#top" class="logo">Da Frame Set</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#testimonials">Stories</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
     </div>
     <div class="nav-cta">
       <a href="#" class="btn btn-ghost">Log in</a>
-      <a href="#pricing" class="btn btn-primary">Start free</a>
-      <button class="menu-btn" aria-label="Menu">☰</button>
+      <a href="#" class="btn btn-primary">Get started free</a>
     </div>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 </header>
 
-<section class="hero">
+<section class="hero" id="top">
   <div class="wrap hero-grid">
     <div>
-      <div class="kicker"><span class="tag">New</span> Anomaly alerts now on every plan</div>
-      <h1>Traffic data that's ready before you refresh the page.</h1>
-      <p class="lede">Pulsegrid streams visitors, sources and page-level detail into one dashboard the moment they happen — no sampling, no overnight delay, no cookie banner to fight over.</p>
-      <div class="hero-actions">
-        <a href="#" class="btn btn-primary">Start free — no card</a>
-        <a href="#" class="btn btn-ghost">View a live workspace</a>
+      <p class="eyebrow">A HABIT APP THAT ACTUALLY STICKS</p>
+      <h1>Turn small daily wins into a <span class="accent">streak you can't quit.</span></h1>
+      <p class="lead">Da Frame Set tracks your habits, nudges you at the right moment, and celebrates every streak — so momentum builds itself instead of relying on willpower alone.</p>
+      <div class="hero-cta">
+        <a href="#" class="btn btn-primary">Start your streak</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
       </div>
-      <p class="no-card">Free up to 10k events a month. Upgrade only when you outgrow it.</p>
-
-      <div class="fact-row">
-        <div class="fact">First data in <b>~2s</b></div>
-        <div class="fact">Tracker under <b>1&nbsp;KB</b></div>
-        <div class="fact"><b>0</b> cookies set</div>
+      <div class="hero-proof">
+        <div class="avatars"><span></span><span></span><span></span><span></span></div>
+        <span>Joined by 42,000+ people building better days</span>
       </div>
     </div>
-
-    <div class="panel dash">
-      <div class="dash-top">
-        <div class="who">acme.io · <span class="mono">318</span> online now</div>
-        <div class="live"><span class="blip"></span>live</div>
+    <div class="hero-visual">
+      <div class="orb"></div>
+      <div class="streak-card">
+        <strong>128 days</strong>
+        <span>Current streak 🔥</span>
       </div>
-      <div class="dash-stats">
-        <div class="dstat">
-          <div class="label">Visitors</div>
-          <div class="value">9,214</div>
-          <div class="delta">+14.6%</div>
-        </div>
-        <div class="dstat">
-          <div class="label">Sessions</div>
-          <div class="value">11,880</div>
-          <div class="delta">+9.1%</div>
-        </div>
-        <div class="dstat">
-          <div class="label">Bounce</div>
-          <div class="value">31%</div>
-          <div class="delta down">−4.3%</div>
-        </div>
-      </div>
-      <div class="dash-chart">
-        <div class="bars">
-          <i style="height:38%"></i><i style="height:52%"></i><i style="height:44%"></i>
-          <i style="height:63%"></i><i style="height:58%"></i><i style="height:71%"></i>
-          <i style="height:60%"></i><i style="height:82%"></i><i style="height:76%"></i>
-          <i style="height:90%"></i><i style="height:68%"></i><i style="height:84%"></i>
-        </div>
-      </div>
-      <div class="dash-rows">
-        <div class="row"><span class="name">/pricing</span><span class="bar"><span style="width:78%"></span></span><span class="num">3,102</span></div>
-        <div class="row"><span class="name">/docs/quickstart</span><span class="bar"><span style="width:54%"></span></span><span class="num">2,140</span></div>
-        <div class="row"><span class="name">/blog/launch</span><span class="bar"><span style="width:36%"></span></span><span class="num">1,408</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="stack-strip">
-      <span>Next.js</span><span>React</span><span>Vue</span><span>Svelte</span>
-      <span>WordPress</span><span>Shopify</span><span>Webflow</span><span>Plain HTML</span>
     </div>
   </div>
 </section>
 
-<section class="divider" style="padding:60px 0;">
+<div class="logos">
   <div class="wrap">
-    <div class="stat-band">
-      <div class="stat-cell">
-        <div class="big">4,200+</div>
-        <div class="lab">sites tracked</div>
-      </div>
-      <div class="stat-cell">
-        <div class="big">38M</div>
-        <div class="lab">events a month</div>
-      </div>
-      <div class="stat-cell">
-        <div class="big">99.98%</div>
-        <div class="lab">uptime last year</div>
-      </div>
-      <div class="stat-cell">
-        <div class="big">~2s</div>
-        <div class="lab">to first data point</div>
-      </div>
-    </div>
+    <span>Loomly</span><span>Northwind</span><span>Fjord</span><span>Basecamp Labs</span><span>Kindred</span>
   </div>
-</section>
+</div>
 
 <section id="features">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Everything a growth team checks daily, in one screen.</h2>
-      <p>No report builder to configure and no dashboard to assemble first. Open it and the numbers that matter are already on screen.</p>
+    <div class="section-head reveal">
+      <p class="eyebrow">FEATURES</p>
+      <h2>Everything that keeps momentum alive</h2>
+      <p>No guilt trips, no clutter — just the tools that make consistency easy to keep up.</p>
     </div>
-    <div class="feat-grid">
-      <div class="feat">
-        <span class="stat mono">~2s</span>
-        <h3>Data as it happens</h3>
-        <p>Every pageview and event streams straight to the dashboard. Nothing is batched or delayed overnight.</p>
-      </div>
-      <div class="feat">
-        <span class="stat mono">0 cookies</span>
-        <h3>No banner required</h3>
-        <p>Visitors are identified with a hash that rotates daily, so there's no personal data to ask permission for.</p>
-      </div>
-      <div class="feat">
-        <span class="stat mono">&lt;1 KB</span>
-        <h3>A tracker you forget about</h3>
-        <p>One async script tag. It hooks into client-side routing automatically, so single-page apps just work.</p>
-      </div>
-      <div class="feat">
-        <span class="stat mono">Custom</span>
-        <h3>Events and goals</h3>
-        <p>One line of code turns any action into a tracked event with its own conversion rate over time.</p>
-      </div>
-      <div class="feat">
-        <span class="stat mono">Shared</span>
-        <h3>Dashboards clients can open</h3>
-        <p>Publish a read-only link with no account needed. Pick exactly which panels are visible on it.</p>
-      </div>
-      <div class="feat">
-        <span class="stat mono">API</span>
-        <h3>Built for reselling</h3>
-        <p>Every number in the dashboard is reachable over REST, so you can build your own views on top.</p>
-      </div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon">◎</div><h3>Smart reminders</h3><p>Da Frame Set learns your rhythm and nudges you when you're actually likely to follow through.</p></div>
+      <div class="feature-card"><div class="feature-icon">▲</div><h3>Streak protection</h3><p>Miss a day by accident? A freeze card keeps your streak alive while you catch up.</p></div>
+      <div class="feature-card"><div class="feature-icon">✦</div><h3>Visual progress</h3><p>Calendars, graphs, and heatmaps that make weeks of effort satisfying to look back on.</p></div>
+      <div class="feature-card"><div class="feature-icon">◐</div><h3>Group challenges</h3><p>Invite friends into a shared streak and keep each other honest with light-touch accountability.</p></div>
+      <div class="feature-card"><div class="feature-icon">◈</div><h3>Flexible routines</h3><p>Daily, weekdays only, or three-times-a-week — build habits around your real schedule.</p></div>
+      <div class="feature-card"><div class="feature-icon">◇</div><h3>Private by default</h3><p>Your data stays yours. Share only the habits and streaks you choose to make public.</p></div>
     </div>
   </div>
 </section>
 
-<section class="divider">
+<section class="how" id="how">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Built for the teams already juggling five other tools.</h2>
-      <p>Same dashboard, different reason to open it depending on who you are.</p>
-    </div>
-    <div class="use-grid">
-      <div class="use-card">
-        <div class="icon">A</div>
-        <h3>Agencies</h3>
-        <p>One workspace per client, shared as a read-only link they can check anytime.</p>
-      </div>
-      <div class="use-card">
-        <div class="icon">S</div>
-        <h3>SaaS founders</h3>
-        <p>Watch signups and activation move in real time without wiring up a BI tool.</p>
-      </div>
-      <div class="use-card">
-        <div class="icon">M</div>
-        <h3>Marketers</h3>
-        <p>See which campaign or post actually drove the traffic, down to the referrer.</p>
-      </div>
-      <div class="use-card">
-        <div class="icon">D</div>
-        <h3>Developers</h3>
-        <p>Pull every metric over the API and build the internal view you actually want.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="compare" class="divider">
-  <div class="wrap compare">
-    <div>
-      <div class="section-head" style="margin-bottom:26px;">
-        <h2>Cookie-based tools only count who says yes.</h2>
-        <p>Anyone who ignores the banner, declines it, or blocks trackers disappears from the report entirely — and that group skews toward exactly the audience most products care about.</p>
-      </div>
-      <p style="color:var(--ink-dim); font-size:0.92rem;">Pulsegrid reads what the server already sees — no script has to wait for permission.</p>
-    </div>
-    <div class="compare-visual panel" style="padding:28px 26px;">
-      <div class="cbar-row">
-        <span class="lab">Cookie-based tool</span>
-        <div class="cbar-track"><div class="cbar-fill" style="width:58%; background:var(--coral);"></div></div>
-        <span class="pct">58%</span>
-      </div>
-      <div class="cbar-row">
-        <span class="lab">Ad blocker active</span>
-        <div class="cbar-track"><div class="cbar-fill" style="width:31%; background:#F5B650;"></div></div>
-        <span class="pct">31%</span>
-      </div>
-      <div class="cbar-row">
-        <span class="lab">Pulsegrid</span>
-        <div class="cbar-track"><div class="cbar-fill" style="width:100%; background:var(--mint);"></div></div>
-        <span class="pct">100%</span>
-      </div>
-      <p style="margin-top:8px; font-size:0.8rem; color:var(--ink-faint);">Illustrative — actual consent rates vary by region and audience.</p>
-    </div>
-  </div>
-</section>
-
-<section id="setup" class="divider">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Three steps. About two minutes.</h2>
-      <p>No SDK, no build change, no policy to rewrite before you can turn it on.</p>
+    <div class="section-head reveal">
+      <p class="eyebrow">HOW IT WORKS</p>
+      <h2>From first tap to first streak in minutes</h2>
     </div>
     <div class="steps">
-      <div class="step">
-        <div class="idx">01</div>
-        <h3>Create a site</h3>
-        <p>Sign up and add a domain. You get a public site key immediately, no verification wait.</p>
-      </div>
-      <div class="step">
-        <div class="idx">02</div>
-        <h3>Drop in the tag</h3>
-        <p>Paste one async script into your page head. It blocks nothing and adds no visible delay.</p>
-      </div>
-      <div class="step">
-        <div class="idx">03</div>
-        <h3>Watch it live</h3>
-        <p>Open the dashboard. Your own visit is usually the first pageview you'll see land.</p>
-      </div>
-    </div>
-    <div class="code-block">
-      <code>&lt;script async src="https://cdn.pulsegrid.io/t.js" data-site="pg_4k91v"&gt;&lt;/script&gt;</code>
-      <span class="copy-tag">Copy</span>
+      <div class="step"><div class="step-num">1</div><h3>Pick your habits</h3><p>Choose from templates or add your own — as specific or simple as you like.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Set your rhythm</h3><p>Tell Da Frame Set how often, and it builds a schedule that fits around your week.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Check in daily</h3><p>One tap logs your progress and keeps the streak counter climbing.</p></div>
+      <div class="step"><div class="step-num">4</div><h3>Watch it compound</h3><p>Weekly recaps show how small actions are adding up to a real routine.</p></div>
     </div>
   </div>
 </section>
 
-<section id="pricing" class="divider">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Plans that scale with your sites, not your headcount.</h2>
-      <p>Every plan gets the full dashboard. Nothing is held back to sell you an upgrade.</p>
-    </div>
-    <div class="price-grid">
-      <div class="price">
-        <span class="plan-name">Hobby</span>
-        <div class="plan-price">$0<span>/mo</span></div>
-        <ul>
-          <li>1 site, up to 10k events/mo</li>
-          <li>Real-time dashboard</li>
-          <li>7-day data retention</li>
-        </ul>
-        <a href="#" class="btn btn-ghost">Start free</a>
+<section>
+  <div class="wrap stats reveal">
+    <div class="stat"><strong data-count="42000">0</strong><span>Active members</span></div>
+    <div class="stat"><strong data-count="3200000">0</strong><span>Habits logged</span></div>
+    <div class="stat"><strong data-count="96">0</strong><span>% keep a habit past 30 days</span></div>
+    <div class="stat"><strong data-count="4">0</strong><span>Avg. rating out of 5</span></div>
+  </div>
+</section>
+
+<section id="testimonials">
+  <div class="testimonials">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow" style="color:#FFB27A;">STORIES</p>
+        <h2>People building routines that last</h2>
+        <p>A few of the streaks Da Frame Set has helped keep going.</p>
       </div>
-      <div class="price featured">
-        <span class="plan-name">Growth</span>
-        <div class="plan-price">$19<span>/mo</span></div>
-        <ul>
-          <li>10 sites, up to 500k events/mo</li>
-          <li>Custom events & goals</li>
-          <li>Shared read-only dashboards</li>
-          <li>1-year data retention</li>
+      <div class="t-track">
+        <div class="t-card"><div class="stars">★★★★★</div><p>"I've tried five habit apps. Da Frame Set is the first one where I actually opened it every day without being annoyed by it."</p><div class="t-person"><div class="t-avatar"></div><div><strong>Maya R.</strong><span>Product designer</span></div></div></div>
+        <div class="t-card"><div class="stars">★★★★★</div><p>"The streak freeze saved me during a rough week. Small thing, but it's the reason I didn't just give up entirely."</p><div class="t-person"><div class="t-avatar"></div><div><strong>Daniel O.</strong><span>Software engineer</span></div></div></div>
+        <div class="t-card"><div class="stars">★★★★★</div><p>"My gym streak is at 96 days. Genuinely did not think that was possible for me a year ago."</p><div class="t-person"><div class="t-avatar"></div><div><strong>Priya K.</strong><span>Physiotherapist</span></div></div></div>
+        <div class="t-card"><div class="stars">★★★★★</div><p>"Group challenges with my sister turned our reading habit into a friendly competition. We're both better for it."</p><div class="t-person"><div class="t-avatar"></div><div><strong>Leo T.</strong><span>Teacher</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">PRICING</p>
+      <h2>Simple plans, no surprise limits</h2>
+      <p>Start free. Upgrade only when you want more habits and deeper insight.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Starter</h3>
+        <div class="price">$0<span>/month</span></div>
+        <p>For anyone testing the waters with one or two habits.</p>
+        <ul class="price-list">
+          <li>Up to 3 active habits</li>
+          <li>Daily reminders</li>
+          <li>Basic streak tracking</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Get started</a>
+      </div>
+      <div class="price-card featured">
+        <span class="badge">Most popular</span>
+        <h3>Momentum</h3>
+        <div class="price">$6<span>/month</span></div>
+        <p>For people building a full daily routine that sticks.</p>
+        <ul class="price-list">
+          <li>Unlimited habits</li>
+          <li>Streak freeze cards</li>
+          <li>Progress heatmaps</li>
+          <li>Group challenges</li>
         </ul>
         <a href="#" class="btn btn-primary">Start free trial</a>
       </div>
-      <div class="price">
-        <span class="plan-name">Agency</span>
-        <div class="plan-price">$49<span>/mo</span></div>
-        <ul>
-          <li>Unlimited sites</li>
-          <li>Full REST API access</li>
-          <li>White-label client reports</li>
-          <li>Unlimited retention</li>
+      <div class="price-card">
+        <h3>Teams</h3>
+        <div class="price">$4<span>/user/mo</span></div>
+        <p>For teams building shared accountability at work.</p>
+        <ul class="price-list">
+          <li>Everything in Momentum</li>
+          <li>Shared team streaks</li>
+          <li>Admin dashboard</li>
         </ul>
         <a href="#" class="btn btn-ghost">Talk to us</a>
       </div>
@@ -809,85 +440,147 @@
   </div>
 </section>
 
-<section class="divider">
+<section id="faq">
   <div class="wrap">
-    <div class="testi">
-      <p class="quote">We moved three client sites over in an afternoon. The dashboard is the one thing everyone on the team actually opens without being asked.</p>
-      <div class="who">
-        <div class="avatar"></div>
-        <div>Renu Kapoor — runs a small web studio</div>
+    <div class="section-head reveal" style="margin-left:auto; margin-right:auto; text-align:center;">
+      <p class="eyebrow">FAQ</p>
+      <h2>Questions people ask before they start</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">Do I need to check in at the same time every day?<span class="plus">+</span></button>
+        <div class="faq-a"><p>No. Da Frame Set tracks your day as a whole, not a specific clock time, so a check-in any time before midnight keeps your streak alive.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What happens if I miss a day?<span class="plus">+</span></button>
+        <div class="faq-a"><p>Your streak resets unless you use a streak freeze, which the Momentum plan gives you a few of each month for exactly this reason.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can I use Da Frame Set for a team or a group of friends?<span class="plus">+</span></button>
+        <div class="faq-a"><p>Yes — group challenges let you share a habit with friends, and the Teams plan adds shared streaks and an admin view for workplaces.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is my data private?<span class="plus">+</span></button>
+        <div class="faq-a"><p>By default, everything you track is visible only to you. You choose what, if anything, to share with a group or challenge.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="faq" class="divider">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Questions people actually ask</h2>
-    </div>
-    <div class="faq">
-      <details open>
-        <summary>Do I need a cookie consent banner?</summary>
-        <p>No. Pulsegrid doesn't set cookies or write to local storage, so there's no personal data to ask permission for.</p>
-      </details>
-      <details>
-        <summary>Will it work with my React or Next.js app?</summary>
-        <p>Yes. The tracker hooks into client-side navigation automatically, so route changes are reported without extra code.</p>
-      </details>
-      <details>
-        <summary>Can I share a dashboard with a client?</summary>
-        <p>Yes — publish a read-only link that opens without an account, and choose exactly which panels are visible on it.</p>
-      </details>
-      <details>
-        <summary>Can I export the raw data?</summary>
-        <p>Yes, from the dashboard at any time, or by calling the same API the dashboard itself is built on.</p>
-      </details>
-    </div>
-  </div>
-</section>
-
-<section class="final-cta">
-  <div class="wrap">
-    <h2>Your first pageview is about two minutes away.</h2>
-    <div class="hero-actions">
-      <a href="#" class="btn btn-primary">Start free — no card</a>
-      <a href="#" class="btn btn-ghost">Read the docs</a>
+<section>
+  <div class="cta-banner reveal">
+    <h2>Your streak starts with today.</h2>
+    <p>Join thousands who turned one small daily habit into a routine that actually lasted.</p>
+    <div class="hero-cta">
+      <a href="#" class="btn btn-primary">Get started free</a>
+      <a href="#" class="btn btn-ghost">Watch a 2-min demo</a>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <a href="#" class="brand"><span class="dot"></span>Pulsegrid</a>
-        <p>Real-time, cookieless web analytics for teams who'd rather look at one screen than build a report.</p>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a href="#top" class="logo">Da Frame Set</a>
+        <p style="margin-top:14px; max-width:32ch;">A habit tracker built around momentum, not guilt.</p>
       </div>
-      <div class="foot-col">
+      <div class="footer-col">
         <h4>Product</h4>
         <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
-        <a href="#setup">Setup</a>
+        <a href="#faq">FAQ</a>
       </div>
-      <div class="foot-col">
+      <div class="footer-col">
         <h4>Company</h4>
         <a href="#">About</a>
+        <a href="#">Careers</a>
         <a href="#">Blog</a>
-        <a href="#">Contact</a>
       </div>
-      <div class="foot-col">
+      <div class="footer-col">
         <h4>Legal</h4>
         <a href="#">Privacy</a>
         <a href="#">Terms</a>
       </div>
     </div>
-    <div class="foot-bottom">
-      <span>© 2026 Pulsegrid. All rights reserved.</span>
-      <span>No cookies. No cross-site tracking.</span>
+    <div class="footer-bottom">
+      <span>© 2026 Da Frame Set. This is a demo landing page.</span>
+      <div class="socials">
+        <a href="#" aria-label="Twitter">𝕏</a>
+        <a href="#" aria-label="Instagram">◎</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+      </div>
     </div>
   </div>
 </footer>
+
+<script>
+  // Mobile nav toggle
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    burger.classList.toggle('open');
+    burger.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    burger.classList.remove('open');
+  }));
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal, .feature-card');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.classList.add('in-view');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.15});
+  revealEls.forEach(el => io.observe(el));
+
+  // Animated stat counters
+  const stats = document.querySelectorAll('.stat strong');
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const target = parseInt(el.dataset.count, 10);
+        const duration = 1400;
+        const start = performance.now();
+        function tick(now){
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.floor(eased * target);
+          el.textContent = target > 1000 ? value.toLocaleString() : value;
+          if(progress < 1) requestAnimationFrame(tick);
+          else el.textContent = target > 1000 ? target.toLocaleString() : target;
+        }
+        requestAnimationFrame(tick);
+        statIO.unobserve(el);
+      }
+    });
+  }, {threshold:0.4});
+  stats.forEach(s => statIO.observe(s));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(open => {
+        open.classList.remove('open');
+        open.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+</script>
 
 </body>
 </html>

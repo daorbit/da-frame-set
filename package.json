@@ -66,5 +66,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.18.3"
   }
 }
