@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   BrowserRouter,
@@ -23,6 +24,17 @@ const NAV: [string, string][] = [
 function App() {
   const { pathname } = useLocation();
   const onPlayground = pathname === '/playground';
+
+  useEffect(() => {
+    const s = document.createElement('script');
+    s.src = 'https://quantalog-be.daorbit.in/tracker.js';
+    s.async = true;
+    s.dataset.site = 'pjnnYUeI3Ll65YD2';
+    document.head.appendChild(s);
+    return () => {
+      document.head.removeChild(s);
+    };
+  }, []);
 
   return (
     <div className={`app${onPlayground ? ' app--fixed' : ''}`}>
