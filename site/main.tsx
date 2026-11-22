@@ -40,7 +40,8 @@ function App() {
     <div className={`app${onPlayground ? ' app--fixed' : ''}`}>
       <header className="topbar">
         <NavLink to="/" className="topbar__brand">
-          <img className="topbar__mark" src="/frameset-logo.svg" alt="da-frame-set" />
+          <img className="topbar__mark" src="/new-logo.png" alt="" />
+          <span className="topbar__name">da-frame-set</span>
         </NavLink>
 
         <nav className="topbar__nav" aria-label="Main">

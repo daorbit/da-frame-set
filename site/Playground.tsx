@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   DEVICES,
   DEVICE_IDS,
@@ -22,8 +23,13 @@ const FAMILY_LABELS: Record<DeviceSpec['family'], string> = {
 const FAMILY_ORDER: DeviceSpec['family'][] = ['apple', 'android', 'windows', 'generic'];
 
  
+function initialDevice(requested: string | null): DeviceId {
+  return requested && requested in DEVICES ? (requested as DeviceId) : 'macbook-pro-16';
+}
+
 export function Playground() {
-  const [device, setDevice] = useState<DeviceId>('macbook-pro-16');
+  const [params] = useSearchParams();
+  const [device, setDevice] = useState<DeviceId>(() => initialDevice(params.get('device')));
   const [draftUrl, setDraftUrl] = useState('');
   const [url, setUrl] = useState(DEMO_URL);
 

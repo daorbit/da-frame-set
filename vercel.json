@@ -3,7 +3,7 @@
   "outputDirectory": "dist-site",
   "rewrites": [
     {
-      "source": "/((?!assets/|demo-site\\.html|favicon\\.svg|favicon\\.png|favicon-32\\.png|frameset-logo\\.svg|frameset-logo-square\\.svg|frameset-logo\\.png|frameset-logo-square\\.png).*)",
+      "source": "/((?!assets/|demo-site\\.html|favicon\\.svg|favicon\\.png|favicon-32\\.png|frameset-logo\\.svg|frameset-logo-square\\.svg|frameset-logo\\.png|frameset-logo-square\\.png|new-logo\\.png).*)",
       "destination": "/index.html"
     }
   ]
